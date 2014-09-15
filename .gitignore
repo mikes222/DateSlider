@@ -1,0 +1,14 @@
+*.iml
+*.class
+
+*.apk
+
+gen/
+
+.idea/
+
+datesliderlib/build
+
+datesliderlib/.gradle
+
+.gradle
