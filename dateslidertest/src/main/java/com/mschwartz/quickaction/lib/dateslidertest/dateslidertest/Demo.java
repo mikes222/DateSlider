@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package com.slider.DateSlider;
+package com.mschwartz.quickaction.lib.dateslidertest.dateslidertest;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -26,6 +26,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.slider.DateSlider.AlternativeDateSlider;
+import com.slider.DateSlider.CustomDateSlider;
+import com.slider.DateSlider.DateSlider;
+import com.slider.DateSlider.DateTimeSlider;
+import com.slider.DateSlider.MonthYearDateSlider;
+import com.slider.DateSlider.TimeSlider;
 import com.slider.DateSlider.labeler.TimeLabeler;
 
 import java.util.Calendar;
@@ -60,6 +66,10 @@ public class Demo extends Activity implements OnClickListener {
     private DateSlider.OnDateSetListener mDateSetListener =
             new DateSlider.OnDateSetListener() {
                 public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    if (selectedDate == null) {
+                        dateText.setText("Date was cleared");
+                        return;
+                    }
                     // update the dateText view with the corresponding date
                     dateText.setText(String.format("The chosen date:%n%te. %tB %tY", selectedDate, selectedDate, selectedDate));
                 }
@@ -68,6 +78,10 @@ public class Demo extends Activity implements OnClickListener {
     private DateSlider.OnDateSetListener mMonthYearSetListener =
             new DateSlider.OnDateSetListener() {
                 public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    if (selectedDate == null) {
+                        dateText.setText("Date was cleared");
+                        return;
+                    }
                     // update the dateText view with the corresponding date
                     dateText.setText(String.format("The chosen date:%n%tB %tY", selectedDate, selectedDate));
                 }
@@ -76,6 +90,10 @@ public class Demo extends Activity implements OnClickListener {
     private DateSlider.OnDateSetListener mTimeSetListener =
             new DateSlider.OnDateSetListener() {
                 public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    if (selectedDate == null) {
+                        dateText.setText("Date was cleared");
+                        return;
+                    }
                     // update the dateText view with the corresponding date
                     dateText.setText(String.format("The chosen time:%n%tR", selectedDate));
                 }
@@ -84,11 +102,13 @@ public class Demo extends Activity implements OnClickListener {
     private DateSlider.OnDateSetListener mDateTimeSetListener =
             new DateSlider.OnDateSetListener() {
                 public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    if (selectedDate == null) {
+                        dateText.setText("Date was cleared");
+                        return;
+                    }
                     // update the dateText view with the corresponding date
-                    int minute = selectedDate.get(Calendar.MINUTE) /
-                            TimeLabeler.MINUTEINTERVAL * TimeLabeler.MINUTEINTERVAL;
                     dateText.setText(String.format("The chosen date and time:%n%te. %tB %tY%n%tH:%02d",
-                            selectedDate, selectedDate, selectedDate, selectedDate, minute));
+                            selectedDate, selectedDate, selectedDate, selectedDate, selectedDate.get(Calendar.MINUTE)));
                 }
             };
 
@@ -102,11 +122,11 @@ public class Demo extends Activity implements OnClickListener {
     private DialogFragment getDemoView(int id) {
         final Calendar c = Calendar.getInstance();
         if (id == R.id.defaultDateSelectButton) {
-            return new DefaultDateSlider(this, mDateSetListener, c);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener);
         } else if (id == R.id.defaultDateLimitSelectButton) {
             final Calendar maxTime = Calendar.getInstance();
             maxTime.add(Calendar.DAY_OF_MONTH, 14);
-            return new DefaultDateSlider(this, mDateSetListener, c, c, maxTime);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime);
         } else if (id == R.id.alternativeDateSelectButton) {
             return new AlternativeDateSlider(this, mDateSetListener, c, c, null);
         } else if (id == R.id.customDateSelectButton) {
@@ -120,7 +140,7 @@ public class Demo extends Activity implements OnClickListener {
             minTime.add(Calendar.HOUR, -2);
             return new TimeSlider(this, mTimeSetListener, c, minTime, c, 5);
         } else if (id == R.id.dateTimeSelectButton) {
-            return new DateTimeSlider(this, mDateTimeSetListener, c);
+            return new DateTimeSlider(this, mDateTimeSetListener, c, null, null);
         }
         return null;
     }

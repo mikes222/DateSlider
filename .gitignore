@@ -12,3 +12,5 @@ datesliderlib/build
 datesliderlib/.gradle
 
 .gradle
+build/*
+*/build/*

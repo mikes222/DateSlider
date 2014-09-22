@@ -10,11 +10,18 @@
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:text="Set"/>
+        android:text="@string/setdatetime"/>
+    <Button
+        android:id="@+id/dateSliderClearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/cleardatetime"/>
     <Button android:id="@+id/dateSliderCancelButton"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:text="Cancel"/>
+        android:text="@string/canceldatetime"/>
 </LinearLayout>

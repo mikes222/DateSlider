@@ -26,22 +26,21 @@ import com.slider.DateSlider.labeler.TimeLabeler;
 
 public class DateTimeSlider extends DateSlider {
 
-	public DateTimeSlider(Context context, OnDateSetListener l,	Calendar calendar) {
-		this(context, l, calendar, null, null);
-	}
-	
-    public DateTimeSlider(Context context, OnDateSetListener l,	Calendar calendar, 
+    public DateTimeSlider(Context context, OnDateSetListener l,	Calendar calendar,
     		Calendar minDate, Calendar maxDate) {
-        super(context, R.layout.datetimeslider, l, calendar, minDate, maxDate);
+        super();
+        setLayout(R.layout.datetimeslider);
+        setOnDateSetListener(l);
+        setMinTime(minDate);
+        setMaxTime(maxDate);
     }
 
     @Override
     protected void setTitle() {
         if (mTitleText != null) {
             final Calendar c = getTime();
-            int minute = c.get(Calendar.MINUTE)/TimeLabeler.MINUTEINTERVAL*TimeLabeler.MINUTEINTERVAL;
             mTitleText.setText(String.format("Selected DateTime: %te/%tm/%ty %tH:%02d",
-                    c,c,c,c,minute));
+                    c,c,c,c,c.get(Calendar.MINUTE)));
         }
     }
 }

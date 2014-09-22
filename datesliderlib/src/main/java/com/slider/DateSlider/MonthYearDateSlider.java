@@ -29,7 +29,12 @@ public class MonthYearDateSlider extends DateSlider {
 	}
     public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar, 
     		Calendar minDate, Calendar maxDate) {
-        super(context, R.layout.monthyeardateslider, l, calendar, minDate, maxDate);
+        super();
+        setLayout(R.layout.monthyeardateslider);
+        setOnDateSetListener(l);
+        setInitialTime(calendar, 1);
+        setMinTime(minDate);
+        setMaxTime(maxDate);
     }
 
     /**

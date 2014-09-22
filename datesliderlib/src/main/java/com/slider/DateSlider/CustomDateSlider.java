@@ -26,7 +26,10 @@ import java.util.Calendar;
 public class CustomDateSlider extends DateSlider {
 
     public CustomDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
-        super(context, R.layout.customdateslider, l, calendar);
+        super();
+        setLayout(R.layout.customdateslider);
+        setOnDateSetListener(l);
+        setInitialTime(calendar, 1);
     }
 
     /**

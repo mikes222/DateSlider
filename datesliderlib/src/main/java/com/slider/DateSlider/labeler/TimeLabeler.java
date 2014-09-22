@@ -7,10 +7,9 @@ import android.util.Log;
 import com.slider.DateSlider.TimeObject;
 
 /**
- * A Labeler that displays times in increments of {@value #MINUTEINTERVAL} minutes.
+ * A Labeler that displays times in increments of {@value #minuteInterval} minutes.
  */
 public class TimeLabeler extends Labeler {
-    public static int MINUTEINTERVAL = 15;
 
     private final String mFormatString;
 
@@ -21,7 +20,7 @@ public class TimeLabeler extends Labeler {
 
     @Override
     public TimeObject add(long time, int val) {
-        return timeObjectFromCalendar(Util.addMinutes(time, val * MINUTEINTERVAL));
+        return timeObjectFromCalendar(Util.addMinutes(time, val * minuteInterval));
     }
 
     /**
@@ -31,13 +30,13 @@ public class TimeLabeler extends Labeler {
     public TimeObject getElem(long time) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(time);
-        c.set(Calendar.MINUTE, c.get(Calendar.MINUTE)/MINUTEINTERVAL*MINUTEINTERVAL);
+        c.set(Calendar.MINUTE, c.get(Calendar.MINUTE)/minuteInterval*minuteInterval);
         Log.v("GETELEM","getelem: "+c.get(Calendar.MINUTE));
         return timeObjectFromCalendar(c);
     }
 
     @Override
     protected TimeObject timeObjectFromCalendar(Calendar c) {
-        return Util.getTime(c, mFormatString, MINUTEINTERVAL);
+        return Util.getTime(c, mFormatString, minuteInterval);
     }
 }

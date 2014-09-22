@@ -1,1 +1,1 @@
-include ':library', ':datesliderlib'
+include ':library', ':datesliderlib', ':dateslidertest'

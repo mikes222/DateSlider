@@ -3,7 +3,7 @@ package com.slider.DateSlider.labeler;
 import android.content.Context;
 
 import com.slider.DateSlider.timeview.DayTimeLayoutView;
-import com.slider.DateSlider.timeview.TimeView;
+        import com.slider.DateSlider.timeview.TimeView;
 
 /**
  * A Labeler that displays days using DayTimeLayoutViews.
