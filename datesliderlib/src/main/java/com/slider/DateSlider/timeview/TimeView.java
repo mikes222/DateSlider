@@ -59,5 +59,6 @@ public interface TimeView {
     public long getEndTime();
     
     public boolean isOutOfBounds();
+
     public void setOutOfBounds(boolean outOfBounds);
 }

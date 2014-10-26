@@ -10,16 +10,17 @@
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.MonthYearLabeler"
         app:labelerFormat="%tb %tY"
-        app:childWidth="180dp"/>
+        app:childWidth="80dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.DayDateLabeler"
         app:labelerFormat="%td %ta"
-        app:childWidth="120dp"/>
+        app:childWidth="60dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.TimeLabeler"
         app:labelerFormat="%tR"
         app:childWidth="80dp"/>
+    <include layout="@layout/jumpbuttons"/>
     <include layout="@layout/dialogbuttons"/>
 </com.slider.DateSlider.SliderContainer>

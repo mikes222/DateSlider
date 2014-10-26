@@ -19,11 +19,7 @@
 
 package com.slider.DateSlider;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +28,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.slider.DateSlider.SliderContainer.OnTimeChangeListener;
-import com.slider.DateSlider.labeler.TimeLabeler;
+
+import java.util.Calendar;
 
 /**
  * A Dialog subclass that hosts a SliderContainer and a couple of buttons,
@@ -55,6 +52,10 @@ public class DateSlider extends DialogFragment {
     protected SliderContainer mContainer;
     protected int minuteInterval;
 
+    protected Button jumpDecMonthButton;
+    protected Button jumpDecWeekButton;
+    protected Button jumpIncWeekButton;
+    protected Button jumpIncMonthButton;
 
     public DateSlider() {
         mLayoutID = R.layout.completedateslider;
@@ -63,7 +64,7 @@ public class DateSlider extends DialogFragment {
 
     public DateSlider setLayout(int layoutID) {
         mLayoutID = layoutID;
-        return  this;
+        return this;
     }
 
     public DateSlider setOnDateSetListener(OnDateSetListener onDateSetListener) {
@@ -86,14 +87,14 @@ public class DateSlider extends DialogFragment {
     }
 
     public DateSlider setInitialTime(Calendar initialTime, int minInterval) {
-        assert(minuteInterval >= 1);
+        assert (minuteInterval >= 1);
         mInitialTime = Calendar.getInstance(initialTime.getTimeZone());
         mInitialTime.setTimeInMillis(initialTime.getTimeInMillis());
 
         this.minuteInterval = minInterval;
-        if (minInterval>1) {
+        if (minInterval > 1) {
             int minutes = mInitialTime.get(Calendar.MINUTE);
-            int diff = ((minutes+minuteInterval/2)/minuteInterval)*minuteInterval - minutes;
+            int diff = ((minutes + minuteInterval / 2) / minuteInterval) * minuteInterval - minutes;
             mInitialTime.add(Calendar.MINUTE, diff);
         }
         return this;
@@ -106,8 +107,8 @@ public class DateSlider extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState!=null) {
-            Calendar c = (Calendar)savedInstanceState.getSerializable("time");
+        if (savedInstanceState != null) {
+            Calendar c = (Calendar) savedInstanceState.getSerializable("time");
             if (c != null) {
                 mInitialTime = c;
             }
@@ -117,20 +118,24 @@ public class DateSlider extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(mLayoutID, container, false);
-        if(null == rootView){
+        if (null == rootView) {
             return null;
         }
         mTitleText = (TextView) rootView.findViewById(R.id.dateSliderTitleText);
         mContainer = (SliderContainer) rootView.findViewById(R.id.dateSliderContainer);
-        dateSliderOkButton = (Button)rootView.findViewById(R.id.dateSliderOkButton);
+        dateSliderOkButton = (Button) rootView.findViewById(R.id.dateSliderOkButton);
         dateSliderCancelButton = (Button) rootView.findViewById(R.id.dateSliderCancelButton);
         dateSliderClearButton = (Button) rootView.findViewById(R.id.dateSliderClearButton);
+        jumpDecMonthButton = (Button) rootView.findViewById(R.id.decMonth);
+        jumpDecWeekButton = (Button) rootView.findViewById(R.id.decWeek);
+        jumpIncWeekButton = (Button) rootView.findViewById(R.id.incWeek);
+        jumpIncMonthButton = (Button) rootView.findViewById(R.id.incMonth);
 
         mContainer.setOnTimeChangeListener(onTimeChangeListener);
         mContainer.setMinuteInterval(minuteInterval);
         mContainer.setTime(mInitialTime);
-        if (minTime!=null) mContainer.setMinTime(minTime);
-        if (maxTime!=null) mContainer.setMaxTime(maxTime);
+        if (minTime != null) mContainer.setMinTime(minTime);
+        if (maxTime != null) mContainer.setMaxTime(maxTime);
 
         if (dateSliderOkButton != null) {
             dateSliderOkButton.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +167,51 @@ public class DateSlider extends DialogFragment {
                 }
             });
         }
+
+        if (jumpDecMonthButton != null) {
+            jumpDecMonthButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.MONTH, -1);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
+        if (jumpDecWeekButton != null) {
+            jumpDecWeekButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.DATE, -7);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
+        if (jumpIncWeekButton != null) {
+            jumpIncWeekButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.DATE, 7);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
+        if (jumpIncMonthButton != null) {
+            jumpIncMonthButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.MONTH, 1);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
         return rootView;
     }
 
@@ -174,7 +224,7 @@ public class DateSlider extends DialogFragment {
 
         public void onTimeChange(Calendar time) {
 
-            if (onDateSetListener!=null && dateSliderOkButton == null)
+            if (onDateSetListener != null && dateSliderOkButton == null)
                 onDateSetListener.onDateSet(DateSlider.this, getTime());
             setTitle();
         }
@@ -182,7 +232,7 @@ public class DateSlider extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (outState==null) outState = new Bundle();
+        if (outState == null) outState = new Bundle();
         outState.putSerializable("time", getTime());
     }
 
@@ -211,8 +261,8 @@ public class DateSlider extends DialogFragment {
     public interface OnDateSetListener {
         /**
          * this method is called when a date was selected by the user
-         * @param view			the caller of the method
          *
+         * @param view the caller of the method
          */
         public void onDateSet(DateSlider view, Calendar selectedDate);
     }

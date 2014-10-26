@@ -1,18 +1,17 @@
 package com.slider.DateSlider.labeler;
 
-import java.util.Calendar;
-
 import com.slider.DateSlider.TimeObject;
+
+import java.util.Calendar;
 
 /**
  * A Labeler that displays minutes
  */
-public class MinuteLabeler extends Labeler {
-    private final String mFormatString;
+public class MinuteLabeler extends TimeLabeler {
+
 
     public MinuteLabeler(String formatString) {
-        super(45, 60);
-        mFormatString = formatString;
+        super(formatString);
     }
 
     @Override

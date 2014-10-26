@@ -1,8 +1,8 @@
 package com.slider.DateSlider.labeler;
 
-import java.util.Calendar;
-
 import com.slider.DateSlider.TimeObject;
+
+import java.util.Calendar;
 
 /**
  * A Labeler that displays months
@@ -11,7 +11,7 @@ public class MonthLabeler extends Labeler {
     private final String mFormatString;
 
     public MonthLabeler(String formatString) {
-        super(180, 60);
+        super(80, 60);
         mFormatString = formatString;
     }
 

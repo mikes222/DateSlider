@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 import com.slider.DateSlider.labeler.Labeler;
+import com.slider.DateSlider.labeler.TimeLabeler;
 import com.slider.DateSlider.timeview.TimeView;
 
 import java.lang.reflect.Constructor;
@@ -249,7 +250,8 @@ public class ScrollLayout extends LinearLayout {
      */
     public void setMinuteInterval(int minInterval) {
         this.minuteInterval = minInterval;
-        mLabeler.setMinuteInterval(minInterval);
+        if (mLabeler instanceof TimeLabeler)
+            ((TimeLabeler)mLabeler).setMinuteInterval(minInterval);
         if (minInterval > 1) {
             final int centerIndex = (getChildCount() / 2);
             for (int i = centerIndex + 1; i < getChildCount(); i++) {

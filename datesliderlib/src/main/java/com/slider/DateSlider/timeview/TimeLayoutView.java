@@ -17,10 +17,13 @@ import com.slider.DateSlider.TimeObject;
  * string followed by a space and then the secondary string.
  */
 public class TimeLayoutView extends LinearLayout implements TimeView {
-    protected long endTime, startTime;
+    protected long endTime;
+    protected long startTime;
     protected String text;
-    protected boolean isCenter=false, isOutOfBounds=false;
-    protected TextView topView, bottomView;
+    protected boolean isCenter=false;
+    protected boolean isOutOfBounds=false;
+    protected TextView topView;
+    protected TextView bottomView;
 
     /**
      * constructor

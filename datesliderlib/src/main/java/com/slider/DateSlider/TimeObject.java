@@ -5,8 +5,13 @@ package com.slider.DateSlider;
  * and end date
  */
 public class TimeObject {
+
     public final CharSequence text;
-    public final long startTime, endTime;
+
+    public final long startTime;
+
+    public final long endTime;
+
     public TimeObject(final CharSequence text, final long startTime, final long endTime) {
         this.text = text;
         this.startTime = startTime;

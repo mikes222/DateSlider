@@ -4,27 +4,31 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
-    <Button android:id="@+id/dateSliderCancelButton"
+    <Button android:id="@+id/decMonth"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:text="@string/canceldatetime"
-        android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"/>
+        android:drawableLeft="@android:drawable/ic_media_rew"/>
     <Button
-        android:id="@+id/dateSliderOkButton"
+        android:id="@+id/decWeek"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:text="@string/setdatetime"
-        android:drawableLeft="@android:drawable/ic_menu_save"/>
+        android:drawableLeft="@android:drawable/ic_media_previous"/>
     <Button
-        android:id="@+id/dateSliderClearButton"
+        android:id="@+id/incWeek"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:text="@string/cleardatetime"
-        android:drawableLeft="@android:drawable/ic_notification_clear_all"/>
+        android:drawableLeft="@android:drawable/ic_media_next"/>
+    <Button
+        android:id="@+id/incMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:drawableLeft="@android:drawable/ic_media_ff"/>
 </LinearLayout>

@@ -1,12 +1,12 @@
 package com.slider.DateSlider.labeler;
 
-import java.util.Calendar;
-
 import android.content.Context;
 
 import com.slider.DateSlider.TimeObject;
 import com.slider.DateSlider.timeview.TimeTextView;
 import com.slider.DateSlider.timeview.TimeView;
+
+import java.util.Calendar;
 
 /**
  * This is an abstract class whose job is create TimeViews that can be used
@@ -23,8 +23,6 @@ public abstract class Labeler {
      */
     private final int viewHeightDP;
     
-    protected int minuteInterval=1;
-
     /**
      * @param viewWidthDP The default width of views labeled by this labeler in dp
      * @param viewHeightDP The default height of views labeled by this labeler in dp
@@ -100,12 +98,4 @@ public abstract class Labeler {
         return (int)(viewHeightDP * context.getResources().getDisplayMetrics().density);
     }
     
-    /**
-     * This method sets a minute interval to only show multiples of this number in any
-     * minute slider 
-     * 
-     */
-    public void setMinuteInterval(int minInterval) {
-    	this.minuteInterval = minInterval;
-    }
-}
+ }

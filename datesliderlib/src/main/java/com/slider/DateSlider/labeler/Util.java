@@ -42,11 +42,11 @@ class Util {
     public static TimeObject getYear(Calendar c, String formatString) {
         int year = c.get(Calendar.YEAR);
         // set calendar to first millisecond of the year
-        c.set(year, 0, 1, 0, 0, 0);
+        c.set(year, Calendar.JANUARY, 1, 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
         long startTime = c.getTimeInMillis();
         // set calendar to last millisecond of the year
-        c.set(year, 11, 31, 23, 59, 59);
+        c.set(year, Calendar.DECEMBER, 31, 23, 59, 59);
         c.set(Calendar.MILLISECOND, 999);
         long endTime = c.getTimeInMillis();
         return new TimeObject(String.format(formatString, c,c), startTime, endTime);
