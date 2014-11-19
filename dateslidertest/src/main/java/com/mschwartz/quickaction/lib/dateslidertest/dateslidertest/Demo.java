@@ -26,13 +26,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.slider.DateSlider.AlternativeDateSlider;
-import com.slider.DateSlider.CustomDateSlider;
 import com.slider.DateSlider.DateSlider;
 import com.slider.DateSlider.DateTimeSlider;
 import com.slider.DateSlider.MonthYearDateSlider;
 import com.slider.DateSlider.TimeSlider;
-import com.slider.DateSlider.labeler.TimeLabeler;
 
 import java.util.Calendar;
 
@@ -122,11 +119,13 @@ public class Demo extends Activity implements OnClickListener {
     private DialogFragment getDemoView(int id) {
         final Calendar c = Calendar.getInstance();
         if (id == R.id.defaultDateSelectButton) {
-            return new DateSlider().setOnDateSetListener(mDateTimeSetListener);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMinuteInterval(15);
         } else if (id == R.id.defaultDateLimitSelectButton) {
             final Calendar maxTime = Calendar.getInstance();
             maxTime.add(Calendar.DAY_OF_MONTH, 14);
-            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime);
+            Calendar minTime = Calendar.getInstance();
+            minTime.add(Calendar.DAY_OF_MONTH, -7);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime).setHours(9, 17);
         } else if (id == R.id.alternativeDateSelectButton) {
             return new AlternativeDateSlider(this, mDateSetListener, c, c, null);
         } else if (id == R.id.customDateSelectButton) {

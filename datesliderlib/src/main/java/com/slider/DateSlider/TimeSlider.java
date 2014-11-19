@@ -19,37 +19,41 @@
 
 package com.slider.DateSlider;
 
-import java.util.Calendar;
-
 import android.content.Context;
+
+import java.util.Calendar;
 
 public class TimeSlider extends DateSlider {
 
-	public TimeSlider(Context context, OnDateSetListener l, Calendar calendar) {
-		this(context, l, calendar, null, null, 1);
-	}
-	
-	public TimeSlider(Context context, OnDateSetListener l, Calendar calendar, int minuteInterval) {
-		this(context, l, calendar, null, null, minuteInterval);
-	}
-	
-    public TimeSlider(Context context, OnDateSetListener l, Calendar calendar, 
-    		Calendar minTime, Calendar maxTime, int minuteInterval) {
+    public TimeSlider(Context context, OnDateSetListener l, Calendar calendar) {
+        this(context, l, calendar, null, null, 1);
+    }
+
+    public TimeSlider(Context context, OnDateSetListener l, Calendar calendar, int minuteInterval) {
+        this(context, l, calendar, null, null, minuteInterval);
+    }
+
+    public TimeSlider(Context context, OnDateSetListener l, Calendar calendar,
+                      Calendar minTime, Calendar maxTime, int minuteInterval) {
         super();
         setLayout(R.layout.timeslider);
         setOnDateSetListener(l);
-        setInitialTime(calendar, minuteInterval);
-        setMinTime(minTime);
-        setMaxTime(maxTime);
+        setMinuteInterval(minuteInterval);
+        if (calendar != null)
+            setInitialTime(calendar);
+        if (minTime != null)
+            setMinTime(minTime);
+        if (maxTime != null)
+            setMaxTime(maxTime);
     }
 
     /**
      * define our own title of the dialog
      */
     @Override
-    protected void setTitle() {
+    protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            mTitleText.setText(String.format("Selected Time: %tR",getTime()));
+            mTitleText.setText(String.format("Selected Time: %tR", time));
         }
     }
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="sundayTopCenter">#FFcc4949</color>
+    <color name="sundayBottomCenter">#FFcc4949</color>
+    <color name="sundayTop">#FF8e3333</color>
+    <color name="sundayBottom">#FF8e3333</color>
+    <color name="workdayTopCenter">#FF333333</color>
+    <color name="workdayBottomCenter">#FF444444</color>
+    <color name="workdayTop">#FF666666</color>
+    <color name="workdayBottom">#FF666666</color>
+</resources>

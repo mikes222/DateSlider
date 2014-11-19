@@ -16,11 +16,10 @@ import com.slider.DateSlider.TimeObject;
  */
 public class TimeTextView extends TextView implements TimeView {
 
-    protected long startTime;
-
-    protected long endTime;
-
-    protected boolean isOutOfBounds = false;
+    /**
+     * The timeObject currently bound to this view
+     */
+    protected TimeObject timeObject;
 
     /**
      * constructor
@@ -53,44 +52,19 @@ public class TimeTextView extends TextView implements TimeView {
     }
 
 
-    public void setTime(TimeObject to) {
-        setText(to.text);
-        this.startTime = to.startTime;
-        this.endTime = to.endTime;
-    }
-
-
-    public void setTime(TimeView other) {
-        setText(other.getTimeText());
-        startTime = other.getStartTime();
-        endTime = other.getEndTime();
-    }
-
-    public long getStartTime() {
-        return this.startTime;
-    }
-
-
-    public long getEndTime() {
-        return this.endTime;
-    }
-
-
-    public String getTimeText() {
-        return String.valueOf(getText());
-    }
-
-    public boolean isOutOfBounds() {
-        return isOutOfBounds;
-    }
-
-    public void setOutOfBounds(boolean outOfBounds) {
-        if (outOfBounds && !isOutOfBounds) {
+    public void setTime(TimeObject timeObject) {
+        this.timeObject = timeObject;
+        setText(timeObject.text);
+        if (timeObject.outOfBounds) {
             setTextColor(0x44666666);
-        } else if (!outOfBounds && isOutOfBounds) {
+        } else {
             setTextColor(0xFF666666);
         }
-        isOutOfBounds = outOfBounds;
+    }
+
+    @Override
+    public TimeObject getTimeObject() {
+        return timeObject;
     }
 
 }

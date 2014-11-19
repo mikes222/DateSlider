@@ -9,26 +9,34 @@
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:drawableLeft="@android:drawable/ic_media_rew"/>
+        android:text="@string/dec1month"
+        android:drawableLeft="@android:drawable/ic_media_rew"
+        style="@style/button"/>
     <Button
         android:id="@+id/decWeek"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:drawableLeft="@android:drawable/ic_media_previous"/>
+        android:text="@string/dec1week"
+        android:drawableLeft="@android:drawable/ic_media_previous"
+        style="@style/button"/>
     <Button
         android:id="@+id/incWeek"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:drawableLeft="@android:drawable/ic_media_next"/>
+        android:text="@string/inc1week"
+        android:drawableLeft="@android:drawable/ic_media_next"
+        style="@style/button"/>
     <Button
         android:id="@+id/incMonth"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:layout_weight="1"
-        android:drawableLeft="@android:drawable/ic_media_ff"/>
+        android:text="@string/inc1month"
+        android:drawableLeft="@android:drawable/ic_media_ff"
+        style="@style/button"/>
 </LinearLayout>

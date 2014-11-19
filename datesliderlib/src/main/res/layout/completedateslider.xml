@@ -18,9 +18,15 @@
         app:childWidth="60dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.TimeLabeler"
-        app:labelerFormat="%tR"
-        app:childWidth="80dp"/>
+        app:labelerClass="com.slider.DateSlider.labeler.HourLabeler"
+        app:labelerFormat="%tH"
+        app:childWidth="50dp"/>
+    <com.slider.DateSlider.ScrollLayout
+        style="@style/Scroller"
+        app:labelerClass="com.slider.DateSlider.labeler.MinuteLabeler"
+        app:labelerFormat="%tM"
+        app:childWidth="40dp"
+        app:childHeight="30dp"/>
     <include layout="@layout/jumpbuttons"/>
     <include layout="@layout/dialogbuttons"/>
 </com.slider.DateSlider.SliderContainer>

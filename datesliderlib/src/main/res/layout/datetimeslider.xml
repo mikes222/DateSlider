@@ -17,7 +17,7 @@
         app:childWidth="120dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.TimeLabeler"
+        app:labelerClass="com.slider.DateSlider.labeler.MinuteLabeler"
         app:labelerFormat="%tR"
         app:childWidth="80dp"/>
     <include layout="@layout/dialogbuttons"/>

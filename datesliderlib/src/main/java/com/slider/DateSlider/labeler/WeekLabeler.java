@@ -1,59 +1,37 @@
 package com.slider.DateSlider.labeler;
 
-import java.util.Calendar;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
 
+import com.slider.DateSlider.TimeBoundaries;
 import com.slider.DateSlider.TimeObject;
 import com.slider.DateSlider.timeview.TimeTextView;
 import com.slider.DateSlider.timeview.TimeView;
+
+import java.util.Calendar;
 
 /**
  * A customized Labeler that displays weeks using a CustomTimeTextView
  */
 public class WeekLabeler extends Labeler {
-    private final String mFormatString;
 
-    public WeekLabeler(String formatString) {
-        super(120, 60);
-        mFormatString = formatString;
+
+    public WeekLabeler(String formatString, TimeBoundaries timeBoundaries) {
+        super(formatString, timeBoundaries);
     }
 
     @Override
     public TimeObject add(long time, int val) {
-        return timeObjectFromCalendar(Util.addWeeks(time, val));
-    }
-
-    /**
-     * We implement this as custom code rather than a method in Util because there
-     * is no format string that shows the week of the year as an integer, so we just
-     * format the week directly rather than extracting it from a Calendar object.
-     */
-    @Override
-    protected TimeObject timeObjectFromCalendar(Calendar c) {
-        int week = c.get(Calendar.WEEK_OF_YEAR);
-        int day_of_week = c.get(Calendar.DAY_OF_WEEK)-1;
-        // set calendar to first millisecond of the week
-        c.add(Calendar.DAY_OF_MONTH,-day_of_week);
-        c.set(Calendar.HOUR_OF_DAY,0);c.set(Calendar.MINUTE,0);c.set(Calendar.SECOND,0);
-        c.set(Calendar.MILLISECOND, 0);
-        long startTime = c.getTimeInMillis();
-        // set calendar to last millisecond of the week
-        c.add(Calendar.DAY_OF_WEEK, 6);
-        c.set(Calendar.HOUR_OF_DAY,23);c.set(Calendar.MINUTE,59);c.set(Calendar.SECOND,59);
-        c.set(Calendar.MILLISECOND, 999);
-        long endTime = c.getTimeInMillis();
-        return new TimeObject(String.format(mFormatString,week), startTime, endTime);
+        return Util.addWeeks(time, val, mFormatString, timeBoundaries);
     }
 
     /**
      * create our customized TimeTextView and return it
      */
     public TimeView createView(Context context, boolean isCenterView) {
-        return new CustomTimeTextView(context, isCenterView, 25);
+        return new CustomTimeTextView(context, isCenterView, 20);
     }
 
     /**
@@ -83,4 +61,12 @@ public class WeekLabeler extends Labeler {
         }
 
     }
+
+    public TimeObject getElem(long time) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(time);
+
+        return Util.getWeek(c, mFormatString, timeBoundaries);
+    }
+
 }

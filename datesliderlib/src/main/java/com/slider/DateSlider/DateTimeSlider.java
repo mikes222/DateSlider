@@ -18,29 +18,28 @@
 
 package com.slider.DateSlider;
 
-import java.util.Calendar;
-
 import android.content.Context;
 
-import com.slider.DateSlider.labeler.TimeLabeler;
+import java.util.Calendar;
 
 public class DateTimeSlider extends DateSlider {
 
-    public DateTimeSlider(Context context, OnDateSetListener l,	Calendar calendar,
-    		Calendar minDate, Calendar maxDate) {
+    public DateTimeSlider(Context context, OnDateSetListener l, Calendar calendar,
+                          Calendar minDate, Calendar maxDate) {
         super();
         setLayout(R.layout.datetimeslider);
         setOnDateSetListener(l);
-        setMinTime(minDate);
-        setMaxTime(maxDate);
+        if (minDate != null)
+            setMinTime(minDate);
+        if (maxDate != null)
+            setMaxTime(maxDate);
     }
 
     @Override
-    protected void setTitle() {
+    protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            final Calendar c = getTime();
             mTitleText.setText(String.format("Selected DateTime: %te/%tm/%ty %tH:%02d",
-                    c,c,c,c,c.get(Calendar.MINUTE)));
+                    time, time, time, time, time.get(Calendar.MINUTE)));
         }
     }
 }

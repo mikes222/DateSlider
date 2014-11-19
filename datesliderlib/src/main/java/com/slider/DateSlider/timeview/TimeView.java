@@ -34,31 +34,7 @@ public interface TimeView {
      * @param to The TimeObject to use to populate this TimeView
      */
     public void setTime(TimeObject to);
-    /**
-     * Instructs this TimeView to copy its values from the specified TimeView, so
-     * it will assume the state of the other TimeView.
-     *
-     * @param other The TimeView to copy values from
-     */
-    public void setTime(TimeView other);
-    
-    /**
-     * Get a string containing the textual representation of this TimeView's time
-     * @return
-     */
-    public String getTimeText();
-    /**
-     * Get the start time of this TimeView
-     * @return
-     */
-    public long getStartTime();
-    /**
-     * Get the end time of this TimeView
-     * @return
-     */
-    public long getEndTime();
-    
-    public boolean isOutOfBounds();
 
-    public void setOutOfBounds(boolean outOfBounds);
+    public TimeObject getTimeObject();
+
 }

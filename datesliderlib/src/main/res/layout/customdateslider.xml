@@ -14,7 +14,7 @@
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.WeekLabeler"
         app:labelerFormat="week %d"
-        app:childWidth="100dp"/>
+        app:childWidth="120dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.DayLabeler"

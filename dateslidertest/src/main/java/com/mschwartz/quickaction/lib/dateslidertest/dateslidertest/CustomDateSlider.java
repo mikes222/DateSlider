@@ -17,9 +17,11 @@
  * limitations under the License.
  */
 
-package com.slider.DateSlider;
+package com.mschwartz.quickaction.lib.dateslidertest.dateslidertest;
 
 import android.content.Context;
+
+import com.slider.DateSlider.DateSlider;
 
 import java.util.Calendar;
 
@@ -27,20 +29,19 @@ public class CustomDateSlider extends DateSlider {
 
     public CustomDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
         super();
-        setLayout(R.layout.customdateslider);
+        setLayout(com.slider.DateSlider.R.layout.customdateslider);
         setOnDateSetListener(l);
-        setInitialTime(calendar, 1);
+        setInitialTime(calendar);
     }
 
     /**
      * define our own title of the dialog
      */
     @Override
-    protected void setTitle() {
+    protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            final Calendar c = getTime();
-            mTitleText.setText(getString(R.string.dateSliderTitle) +
-                    String.format(": %tA, %te/%tm/%ty", c, c, c, c));
+            mTitleText.setText(getString(com.slider.DateSlider.R.string.dateSliderTitle) +
+                    String.format(": %tA, %te/%tm/%ty", time, time, time, time));
         }
     }
 }

@@ -18,34 +18,37 @@
 
 package com.slider.DateSlider;
 
-import java.util.Calendar;
-
 import android.content.Context;
+
+import java.util.Calendar;
 
 public class MonthYearDateSlider extends DateSlider {
 
-	public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
-		this(context, l, calendar, null, null);
-	}
-    public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar, 
-    		Calendar minDate, Calendar maxDate) {
+    public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
+        this(context, l, calendar, null, null);
+    }
+
+    public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar,
+                               Calendar minDate, Calendar maxDate) {
         super();
         setLayout(R.layout.monthyeardateslider);
         setOnDateSetListener(l);
-        setInitialTime(calendar, 1);
-        setMinTime(minDate);
-        setMaxTime(maxDate);
+        if (calendar != null)
+            setInitialTime(calendar);
+        if (minDate != null)
+            setMinTime(minDate);
+        if (maxDate != null)
+            setMaxTime(maxDate);
     }
 
     /**
      * override the setTitle method so that only the month and the year are shown.
      */
     @Override
-    protected void setTitle() {
+    protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            final Calendar c = getTime();
             mTitleText.setText(getString(R.string.dateSliderTitle) +
-                    String.format(": %tB %tY",c,c));
+                    String.format(": %tB %tY", time, time));
         }
     }
 

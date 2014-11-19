@@ -17,25 +17,30 @@
  * limitations under the License.
  */
 
-package com.slider.DateSlider;
-
-import java.util.Calendar;
+package com.mschwartz.quickaction.lib.dateslidertest.dateslidertest;
 
 import android.content.Context;
 
+import com.slider.DateSlider.DateSlider;
+
+import java.util.Calendar;
+
 public class AlternativeDateSlider extends DateSlider {
-	
-	public AlternativeDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
-		this(context, l, calendar, null, null);
-	}
-	
-    public AlternativeDateSlider(Context context, OnDateSetListener l, Calendar calendar, 
-    		Calendar minDate, Calendar maxDate) {
+
+    public AlternativeDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
+        this(context, l, calendar, null, null);
+    }
+
+    public AlternativeDateSlider(Context context, OnDateSetListener l, Calendar calendar,
+                                 Calendar minDate, Calendar maxDate) {
         super();
         setLayout(R.layout.altdateslider);
         setOnDateSetListener(l);
-        setInitialTime(calendar, 1);
-        setMinTime(minDate);
-        setMaxTime(maxDate);
+        if (calendar != null)
+            setInitialTime(calendar);
+        if (minDate != null)
+            setMinTime(minDate);
+        if (maxDate != null)
+            setMaxTime(maxDate);
     }
 }

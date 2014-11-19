@@ -10,7 +10,8 @@
         android:gravity="center"
         android:layout_weight="1"
         android:text="@string/canceldatetime"
-        android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"/>
+        android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+        style="@style/button"/>
     <Button
         android:id="@+id/dateSliderOkButton"
         android:layout_width="wrap_content"
@@ -18,7 +19,8 @@
         android:gravity="center"
         android:layout_weight="1"
         android:text="@string/setdatetime"
-        android:drawableLeft="@android:drawable/ic_menu_save"/>
+        android:drawableLeft="@android:drawable/ic_menu_save"
+        style="@style/button"/>
     <Button
         android:id="@+id/dateSliderClearButton"
         android:layout_width="wrap_content"
@@ -26,5 +28,6 @@
         android:gravity="center"
         android:layout_weight="1"
         android:text="@string/cleardatetime"
-        android:drawableLeft="@android:drawable/ic_notification_clear_all"/>
+        android:drawableLeft="@android:drawable/ic_notification_clear_all"
+        style="@style/button"/>
 </LinearLayout>

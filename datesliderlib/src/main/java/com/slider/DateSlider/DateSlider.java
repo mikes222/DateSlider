@@ -41,16 +41,25 @@ public class DateSlider extends DialogFragment {
 //	private static String TAG = "DATESLIDER";
 
     protected OnDateSetListener onDateSetListener;
+
     protected Calendar mInitialTime;
-    protected Calendar minTime;
-    protected Calendar maxTime;
+
     protected int mLayoutID;
+
+    protected TimeBoundaries tempTimeBoundaries = new TimeBoundaries();
+
+    /**
+     * Optional text containing the currently selected date/time
+     */
     protected TextView mTitleText;
     protected Button dateSliderOkButton;
     protected Button dateSliderCancelButton;
     protected Button dateSliderClearButton;
+
+    /**
+     * The main container which holds all components belonging to this library. It must not be null.
+     */
     protected SliderContainer mContainer;
-    protected int minuteInterval;
 
     protected Button jumpDecMonthButton;
     protected Button jumpDecWeekButton;
@@ -59,7 +68,7 @@ public class DateSlider extends DialogFragment {
 
     public DateSlider() {
         mLayoutID = R.layout.completedateslider;
-        setInitialTime(Calendar.getInstance(), 15);
+        setInitialTime(Calendar.getInstance());
     }
 
     public DateSlider setLayout(int layoutID) {
@@ -73,29 +82,58 @@ public class DateSlider extends DialogFragment {
     }
 
     public DateSlider setMinTime(Calendar minTime) {
-        this.minTime = minTime;
+        tempTimeBoundaries.minTime = minTime.getTimeInMillis();
+        if (mContainer != null) {
+            mContainer.setMinTime(tempTimeBoundaries.minTime);
+        }
         return this;
     }
 
     public DateSlider setMaxTime(Calendar maxTime) {
-        this.maxTime = maxTime;
+        tempTimeBoundaries.maxTime = maxTime.getTimeInMillis();
+        if (mContainer != null) {
+            mContainer.setMaxTime(tempTimeBoundaries.maxTime);
+        }
         return this;
     }
 
-    public int getMinuteInterval() {
-        return minuteInterval;
+    public DateSlider setMinuteInterval(int minuteInterval) {
+        assert (minuteInterval >= 1 && minuteInterval < 60);
+        tempTimeBoundaries.minuteInterval = minuteInterval;
+        if (mContainer != null) {
+            mContainer.setMinuteInterval(minuteInterval);
+        }
+        return this;
     }
 
-    public DateSlider setInitialTime(Calendar initialTime, int minInterval) {
-        assert (minuteInterval >= 1);
+    public DateSlider setInitialTime(Calendar initialTime) {
         mInitialTime = Calendar.getInstance(initialTime.getTimeZone());
         mInitialTime.setTimeInMillis(initialTime.getTimeInMillis());
 
-        this.minuteInterval = minInterval;
-        if (minInterval > 1) {
-            int minutes = mInitialTime.get(Calendar.MINUTE);
-            int diff = ((minutes + minuteInterval / 2) / minuteInterval) * minuteInterval - minutes;
-            mInitialTime.add(Calendar.MINUTE, diff);
+        if (mContainer != null) {
+            mContainer.setTime(mInitialTime);
+        }
+        return this;
+    }
+
+    /**
+     * Sets the start- and end hours. This can be used if the calendar should only accept working hours. Make sure that either both
+     * are set to -1 or both are set to a value from 0 to 23 whereas starthours must be before endHours. Note that endHours
+     * only specify the "hour" part of the calender but does not restrict the minutes. In other words setting the endHour to 17
+     * allows times up to 17:59 (5:59pm).
+     *
+     * @param startHour
+     * @param endHour
+     * @return
+     */
+    public DateSlider setHours(int startHour, int endHour) {
+        assert (startHour == -1 || (startHour >= 0 && startHour <= 23));
+        assert (endHour == -1 || (endHour >= 0 && endHour <= 23));
+        assert ((startHour == -1 && endHour == -1) || (startHour < endHour));
+        tempTimeBoundaries.startHour = startHour;
+        tempTimeBoundaries.endHour = endHour;
+        if (mContainer != null) {
+            mContainer.setHours(startHour, endHour);
         }
         return this;
     }
@@ -123,6 +161,7 @@ public class DateSlider extends DialogFragment {
         }
         mTitleText = (TextView) rootView.findViewById(R.id.dateSliderTitleText);
         mContainer = (SliderContainer) rootView.findViewById(R.id.dateSliderContainer);
+
         dateSliderOkButton = (Button) rootView.findViewById(R.id.dateSliderOkButton);
         dateSliderCancelButton = (Button) rootView.findViewById(R.id.dateSliderCancelButton);
         dateSliderClearButton = (Button) rootView.findViewById(R.id.dateSliderClearButton);
@@ -132,10 +171,7 @@ public class DateSlider extends DialogFragment {
         jumpIncMonthButton = (Button) rootView.findViewById(R.id.incMonth);
 
         mContainer.setOnTimeChangeListener(onTimeChangeListener);
-        mContainer.setMinuteInterval(minuteInterval);
-        mContainer.setTime(mInitialTime);
-        if (minTime != null) mContainer.setMinTime(minTime);
-        if (maxTime != null) mContainer.setMaxTime(maxTime);
+        mContainer.setTime(mInitialTime, tempTimeBoundaries);
 
         if (dateSliderOkButton != null) {
             dateSliderOkButton.setOnClickListener(new View.OnClickListener() {
@@ -225,8 +261,8 @@ public class DateSlider extends DialogFragment {
         public void onTimeChange(Calendar time) {
 
             if (onDateSetListener != null && dateSliderOkButton == null)
-                onDateSetListener.onDateSet(DateSlider.this, getTime());
-            setTitle();
+                onDateSetListener.onDateSet(DateSlider.this, time);
+            setTitle(time);
         }
     };
 
@@ -246,11 +282,10 @@ public class DateSlider extends DialogFragment {
     /**
      * This method sets the title of the dialog
      */
-    protected void setTitle() {
+    protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            final Calendar c = getTime();
             mTitleText.setText(
-                    String.format("%te. %tB %tY %tH:%02d", c, c, c, c, c.get(Calendar.MINUTE)));
+                    String.format("%te. %tB %tY %tH:%02d", time, time, time, time, time.get(Calendar.MINUTE)));
         }
     }
 

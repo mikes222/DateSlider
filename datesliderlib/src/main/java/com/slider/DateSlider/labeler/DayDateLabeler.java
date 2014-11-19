@@ -2,6 +2,7 @@ package com.slider.DateSlider.labeler;
 
 import android.content.Context;
 
+import com.slider.DateSlider.TimeBoundaries;
 import com.slider.DateSlider.timeview.DayTimeLayoutView;
         import com.slider.DateSlider.timeview.TimeView;
 
@@ -16,8 +17,8 @@ public class DayDateLabeler extends DayLabeler {
      *
      * @param formatString
      */
-    public DayDateLabeler(String formatString) {
-        super(formatString);
+    public DayDateLabeler(String formatString, TimeBoundaries timeBoundaries) {
+        super(formatString, timeBoundaries);
     }
 
     @Override

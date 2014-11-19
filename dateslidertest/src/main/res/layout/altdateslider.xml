@@ -9,6 +9,7 @@
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.YearLabeler"
         app:labelerFormat="%tY"
+        app:childHeight="80dp"
         app:childWidth="180dp"/>
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"

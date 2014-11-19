@@ -5,4 +5,8 @@
     <string name="setdatetime">Set</string>
     <string name="cleardatetime">Clear</string>
     <string name="canceldatetime">Cancel</string>
+    <string name="dec1month">-M</string>
+    <string name="inc1month">+M</string>
+    <string name="inc1week">+W</string>
+    <string name="dec1week">-W</string>
 </resources>

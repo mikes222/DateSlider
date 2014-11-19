@@ -2,6 +2,7 @@ package com.slider.DateSlider.labeler;
 
 import android.content.Context;
 
+import com.slider.DateSlider.TimeBoundaries;
 import com.slider.DateSlider.timeview.TimeLayoutView;
 import com.slider.DateSlider.timeview.TimeView;
 
@@ -9,15 +10,9 @@ import com.slider.DateSlider.timeview.TimeView;
  * A Labeler that displays months using TimeLayoutViews.
  */
 public class MonthYearLabeler extends MonthLabeler {
-    /**
-     * The format string that specifies how to display the month. Since this class
-     * uses a TimeLayoutView, the format string should consist of two strings
-     * separated by a space.
-     *
-     * @param formatString
-     */
-    public MonthYearLabeler(String formatString) {
-        super(formatString);
+
+    public MonthYearLabeler(String formatString, TimeBoundaries timeBoundaries) {
+        super(formatString, timeBoundaries);
     }
 
     @Override

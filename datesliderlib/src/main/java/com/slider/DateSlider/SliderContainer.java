@@ -15,29 +15,29 @@ import java.util.Calendar;
  */
 public class SliderContainer extends LinearLayout {
 
+    private static String TAG = "SliderContainer";
     /**
      * The currently selected time. Changes whenever the user moves one of the sliders.
      */
-    private Calendar mTime = null;
+    private Calendar mTime = Calendar.getInstance();
 
     /**
      * This listener gets informed whenever the user moves one of the sliders and hence changes the time.
      */
     private OnTimeChangeListener mOnTimeChangeListener;
 
-    /**
-     * the minute interval
-     */
-    private int minuteInterval;
+    private TimeBoundaries timeBoundaries = new TimeBoundaries();
 
     public SliderContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
+        timeBoundaries.minuteInterval = 1;
         setOrientation(VERTICAL);
     }
 
     @Override
     protected void onFinishInflate() {
         final int childCount = getChildCount();
+        ScrollLayout last = null;
         for (int i = 0; i < childCount; i++) {
             View v = getChildAt(i);
             if (v instanceof ScrollLayout) {
@@ -46,19 +46,45 @@ public class SliderContainer extends LinearLayout {
                         new ScrollLayout.OnScrollListener() {
                             public void onScroll(long x) {
                                 mTime.setTimeInMillis(x);
-                                arrangeScrollLayout(sl);
+                                //arrangeScrollLayout(sl);
+                                if (mOnTimeChangeListener != null) {
+                                    mOnTimeChangeListener.onTimeChange(mTime);
+                                }
                             }
                         });
+                sl.setTimeBoundaries(timeBoundaries);
+                if (last != null) {
+                    sl.setParent(last);
+                    last.setChild(sl);
+                }
+                last = sl;
             }
         }
+    }
+
+    public void setTime(Calendar calendar, TimeBoundaries tempTimeBoundaries) {
+        if (tempTimeBoundaries.minTime != -1)
+            timeBoundaries.minTime = tempTimeBoundaries.minTime;
+        if (tempTimeBoundaries.maxTime != -1)
+            timeBoundaries.maxTime = tempTimeBoundaries.maxTime;
+        if (tempTimeBoundaries.minuteInterval > 1)
+            timeBoundaries.minuteInterval = tempTimeBoundaries.minuteInterval;
+        if (tempTimeBoundaries.startHour != -1)
+            timeBoundaries.startHour = tempTimeBoundaries.startHour;
+        if (tempTimeBoundaries.endHour != -1)
+            timeBoundaries.endHour = tempTimeBoundaries.endHour;
+        setTime(calendar);
     }
 
     /**
      * Set the current time and update all of the child ScrollLayouts accordingly.
      */
     public void setTime(Calendar calendar) {
-        mTime = Calendar.getInstance(calendar.getTimeZone());
         mTime.setTimeInMillis(calendar.getTimeInMillis());
+        if (timeBoundaries.minTime != -1 && mTime.getTimeInMillis() < timeBoundaries.minTime)
+            mTime.setTimeInMillis(timeBoundaries.minTime);
+        if (timeBoundaries.maxTime != -1 && mTime.getTimeInMillis() > timeBoundaries.maxTime)
+            mTime.setTimeInMillis(timeBoundaries.maxTime);
         arrangeScrollLayout(null);
     }
 
@@ -71,58 +97,25 @@ public class SliderContainer extends LinearLayout {
         return mTime;
     }
 
-
-    /**
-     * sets the minimum date that the scroller can scroll
-     *
-     * @param c the minimum date (inclusive)
-     */
-    public void setMinTime(Calendar c) {
-        if (mTime == null) {
-            throw new RuntimeException("You have to call setTime before setting a MinimumTime!");
-        }
-        final int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View v = getChildAt(i);
-            if (v instanceof ScrollLayout) {
-                ScrollLayout scroller = (ScrollLayout) v;
-                scroller.setMinTime(c.getTimeInMillis());
-            }
-        }
+    public void setMinTime(long minTime) {
+        timeBoundaries.minTime = minTime;
+        arrangeScrollLayout(null);
     }
 
-    /**
-     * sets the maximum date that the scroller can scroll
-     *
-     * @param c the maximum date (inclusive)
-     */
-    public void setMaxTime(Calendar c) {
-        if (mTime == null) {
-            throw new RuntimeException("You have to call setTime before setting a MinimumTime!");
-        }
-        final int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View v = getChildAt(i);
-            if (v instanceof ScrollLayout) {
-                ScrollLayout scroller = (ScrollLayout) v;
-                scroller.setMaxTime(c.getTimeInMillis());
-            }
-        }
+    public void setMaxTime(long maxTime) {
+        timeBoundaries.maxTime = maxTime;
+        arrangeScrollLayout(null);
     }
 
-    /**
-     * sets the minute interval of the scroll layouts.
-     */
-    public void setMinuteInterval(int minInterval) {
-        this.minuteInterval = minInterval;
-        final int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View v = getChildAt(i);
-            if (v instanceof ScrollLayout) {
-                ScrollLayout scroller = (ScrollLayout) v;
-                scroller.setMinuteInterval(minInterval);
-            }
-        }
+    public void setMinuteInterval(int minuteInterval) {
+        timeBoundaries.minuteInterval = minuteInterval;
+        arrangeScrollLayout(null);
+    }
+
+    public void setHours(int startHour, int endHour) {
+        timeBoundaries.startHour = startHour;
+        timeBoundaries.endHour = endHour;
+        arrangeScrollLayout(null);
     }
 
     /**
@@ -149,17 +142,13 @@ public class SliderContainer extends LinearLayout {
             }
             if (v instanceof ScrollLayout) {
                 ScrollLayout scroller = (ScrollLayout) v;
-                scroller.setTime(mTime.getTimeInMillis());
+                scroller.setTime(mTime);
+                if (scroller.getChild() == null && mOnTimeChangeListener != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(scroller.getTime());
+                    mOnTimeChangeListener.onTimeChange(calendar);
+                }
             }
-        }
-
-        if (mOnTimeChangeListener != null) {
-            if (minuteInterval > 1) {
-                int minute = mTime.get(Calendar.MINUTE) / minuteInterval * minuteInterval;
-
-                mTime.set(Calendar.MINUTE, minute);
-            }
-            mOnTimeChangeListener.onTimeChange(mTime);
         }
     }
 

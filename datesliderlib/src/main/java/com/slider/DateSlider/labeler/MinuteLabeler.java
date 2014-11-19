@@ -1,31 +1,46 @@
 package com.slider.DateSlider.labeler;
 
+import android.content.Context;
+
+import com.slider.DateSlider.TimeBoundaries;
 import com.slider.DateSlider.TimeObject;
+import com.slider.DateSlider.timeview.TimeTextView;
+import com.slider.DateSlider.timeview.TimeView;
 
 import java.util.Calendar;
 
 /**
  * A Labeler that displays minutes
  */
-public class MinuteLabeler extends TimeLabeler {
+public class MinuteLabeler extends Labeler {
+
+    private static String TAG = "MinuteLabeler";
 
 
-    public MinuteLabeler(String formatString) {
-        super(formatString);
+    public MinuteLabeler(String formatString, TimeBoundaries timeBoundaries) {
+        super(formatString, timeBoundaries);
+    }
+
+    @Override
+    public TimeView createView(Context context, boolean isCenterView) {
+        return new TimeTextView(context, isCenterView, 18);
     }
 
     @Override
     public TimeObject add(long time, int val) {
-        return timeObjectFromCalendar(Util.addMinutes(time, val, minuteInterval));
+        TimeObject result = Util.addMinutes(time, val, mFormatString, timeBoundaries);
+        //Log.i(TAG, "add " + new java.util.Date(time).toString() + ", val " + val + ", " + result.toString());
+        return result;
     }
 
-    @Override
-    protected TimeObject timeObjectFromCalendar(Calendar c) {
-    	if (minuteInterval>1) {
-    		int minutes = c.get(Calendar.MINUTE);
-    		c.set(Calendar.MINUTE, minutes-(minutes%minuteInterval));
-    	}
-        return Util.getMinute(c, mFormatString, minuteInterval);
+    public TimeObject getElem(long time) {
+
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(time);
+
+        TimeObject result =  Util.getMinute(c, mFormatString, timeBoundaries);
+        //Log.i(TAG, "getElem " + c.getTime().toString() + ", " + result.toString());
+        return result;
     }
 
 }
