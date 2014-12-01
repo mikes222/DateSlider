@@ -155,6 +155,7 @@ public class DateSlider extends DialogFragment {
             if (c != null) {
                 mInitialTime = c;
             }
+            tempTimeBoundaries = (TimeBoundaries) savedInstanceState.getSerializable("tempTimeBoundaries");
         }
     }
 
@@ -278,6 +279,7 @@ public class DateSlider extends DialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         if (outState == null) outState = new Bundle();
         outState.putSerializable("time", getTime());
+        outState.putSerializable("tempTimeBoundaries", tempTimeBoundaries);
     }
 
     /**

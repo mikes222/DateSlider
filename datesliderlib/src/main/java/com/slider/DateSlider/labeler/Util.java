@@ -93,7 +93,10 @@ class Util {
                     c.add(Calendar.DATE, -1);
                 }
                 if (timeBoundaries.endHour != -1 && (c.getTimeInMillis() % MILLISECONDSPERDAY) > (timeBoundaries.endHour + 1) * 60 * 60 * 1000 - 1 - timeBoundaries.minuteInterval * 30 * 1000) {
-                    c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
+                    if (timeBoundaries.minuteInterval > 1)
+                        c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour - 1);
+                    else
+                        c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
                     c.add(Calendar.DATE, 1);
                 }
             }

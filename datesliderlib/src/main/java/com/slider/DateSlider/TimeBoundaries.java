@@ -1,10 +1,12 @@
 package com.slider.DateSlider;
 
+import java.io.Serializable;
+
 /**
  * This class holds all boundaries relevant for the views. It exists just once per dialog.
  * Created by DELL on 19.11.2014.
  */
-public class TimeBoundaries {
+public class TimeBoundaries implements Serializable {
 
     public long minTime = -1;
 
