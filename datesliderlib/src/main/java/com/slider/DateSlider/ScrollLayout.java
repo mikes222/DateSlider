@@ -37,7 +37,6 @@ import com.slider.DateSlider.labeler.Labeler;
 import com.slider.DateSlider.timeview.TimeView;
 
 import java.lang.reflect.Constructor;
-import java.util.Calendar;
 
 /**
  * This is where most of the magic happens. This is a subclass of LinearLayout
@@ -261,9 +260,7 @@ public class ScrollLayout extends LinearLayout {
         // way back to the beginning.
         mCenterView = (TimeView) getChildAt(centerIndex);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(currentTime);
-        setTime(calendar);
+        setTime(currentTime);
 
     }
 
@@ -273,9 +270,7 @@ public class ScrollLayout extends LinearLayout {
             return;
         }
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
-        setTime(calendar);
+        setTime(time);
 
         if (parent != null) {
             parent.setTimeByChild(time);
@@ -288,9 +283,7 @@ public class ScrollLayout extends LinearLayout {
             return;
         }
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
-        setTime(calendar);
+        setTime(time);
 
         if (child != null) {
             child.setTimeByParent(time);
@@ -303,10 +296,11 @@ public class ScrollLayout extends LinearLayout {
      * Sets the time. This method always repopulate all views with new labels.
      * @param time
      */
-    public void setTime(Calendar time) {
-        currentTime = time.getTimeInMillis();
+    public void setTime(long time) {
+        currentTime = time;
         //Log.i(TAG, "  setTime " + new java.util.Date(currentTime).toString() + ", " + time.getTime().toString());
         mCenterView.setTime(mLabeler.getElem(currentTime));
+        //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mLabeler.getElem(currentTime).toString());
         for (int i = centerIndex + 1; i < getChildCount(); i++) {
             TimeView lastView = (TimeView) getChildAt(i - 1);
             TimeView thisView = (TimeView) getChildAt(i);
@@ -354,9 +348,10 @@ public class ScrollLayout extends LinearLayout {
     }
 
     public long getTime() {
-        if (timeBoundaries.minuteInterval == 1)
-            return mCenterView.getTimeObject().startTime;
-        return (mCenterView.getTimeObject().startTime + mCenterView.getTimeObject().endTime + 1) / 2;
+        return mCenterView.getTimeObject().getDisplayTime();
+//        if (timeBoundaries.minuteInterval == 1)
+//            return mCenterView.getTimeObject().startTime;
+//        return (mCenterView.getTimeObject().startTime + mCenterView.getTimeObject().endTime + 1) / 2;
     }
     /**
      * scroll the element when the mScroller is still scrolling
@@ -454,6 +449,7 @@ public class ScrollLayout extends LinearLayout {
             int left = (getChildCount() / 2) * objWidth - scrollX;
             double f = (center - left) / objWidth;
             currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * f);
+            //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mCenterView.getTimeObject().toString());
             if (parent != null)
                 parent.setTimeByChild(currentTime);
             if (child != null)

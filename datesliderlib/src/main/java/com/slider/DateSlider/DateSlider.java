@@ -66,6 +66,11 @@ public class DateSlider extends DialogFragment {
     protected Button jumpIncWeekButton;
     protected Button jumpIncMonthButton;
 
+    /**
+     * The text to display as title
+     */
+    private String title;
+
     public DateSlider() {
         mLayoutID = R.layout.completedateslider;
         setInitialTime(Calendar.getInstance());
@@ -248,6 +253,9 @@ public class DateSlider extends DialogFragment {
             });
         }
 
+        if (getDialog() != null && this.title != null)
+            getDialog().setTitle(this.title);
+
         return rootView;
     }
 
@@ -277,6 +285,13 @@ public class DateSlider extends DialogFragment {
      */
     protected Calendar getTime() {
         return mContainer.getTime();
+    }
+
+    public DateSlider setTitle(String title) {
+        this.title = title;
+        if (getDialog() != null)
+            getDialog().setTitle(title);
+        return this;
     }
 
     /**

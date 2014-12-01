@@ -142,7 +142,7 @@ public class SliderContainer extends LinearLayout {
             }
             if (v instanceof ScrollLayout) {
                 ScrollLayout scroller = (ScrollLayout) v;
-                scroller.setTime(mTime);
+                scroller.setTime(mTime.getTimeInMillis());
                 if (scroller.getChild() == null && mOnTimeChangeListener != null) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(scroller.getTime());
