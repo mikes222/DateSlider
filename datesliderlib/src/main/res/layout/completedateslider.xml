@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.slider.DateSlider.SliderContainer
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.slider.DateSlider.SliderContainer xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dateSliderContainer"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <include layout="@layout/dialogtitle"/>
+
+    <include layout="@layout/dialogtitle" />
+
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.MonthYearLabeler"
         app:labelerFormat="%tb %tY"
-        app:childWidth="80dp"/>
+        app:childWidth="80dp"
+        app:childHeight="60dp" />
+
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.DayDateLabeler"
         app:labelerFormat="%td %ta"
-        app:childWidth="60dp"/>
+        app:childWidth="60dp"
+        app:childHeight="60dp" />
+
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.HourLabeler"
         app:labelerFormat="%tH"
-        app:childWidth="50dp"/>
+        app:childWidth="50dp" />
+
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.MinuteLabeler"
         app:labelerFormat="%tM"
         app:childWidth="40dp"
-        app:childHeight="30dp"/>
-    <include layout="@layout/jumpbuttons"/>
-    <include layout="@layout/dialogbuttons"/>
+        app:childHeight="30dp" />
+
+    <include layout="@layout/jumpbuttons" />
+
+    <include layout="@layout/dialogbuttons" />
 </com.slider.DateSlider.SliderContainer>
