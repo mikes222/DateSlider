@@ -29,7 +29,7 @@ public class MinuteLabeler extends Labeler {
     @Override
     public TimeObject add(long time, int val) {
         TimeObject result = Util.addMinutes(time, val, mFormatString, timeBoundaries);
-        //Log.i(TAG, "add " + new java.util.Date(time).toString() + ", val " + val + ", " + result.toString());
+        //Log.i(TAG, "add " + val + ", " + result.toString());
         return result;
     }
 
@@ -39,7 +39,7 @@ public class MinuteLabeler extends Labeler {
         c.setTimeInMillis(time);
 
         TimeObject result =  Util.getMinute(c, mFormatString, timeBoundaries);
-        //Log.i(TAG, "getElem " + c.getTime().toString() + ", " + result.toString());
+        //Log.i(TAG, "getElem " + result.toString());
         return result;
     }
 

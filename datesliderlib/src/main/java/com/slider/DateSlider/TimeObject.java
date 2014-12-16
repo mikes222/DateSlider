@@ -1,6 +1,6 @@
 package com.slider.DateSlider;
 
-import java.util.Calendar;
+import com.slider.DateSlider.labeler.Util;
 
 /**
  * Very simple helper class that defines a time unit with a label (text) its start-
@@ -25,14 +25,23 @@ public class TimeObject {
      */
     public final long displayTime;
 
-    public final boolean outOfBounds;
+    public boolean outOfBounds;
 
-    public TimeObject(final CharSequence text, final long startTime, final long endTime, final long displayTime, final boolean outOfBounds) {
+    public boolean oobLeft;
+
+    public boolean oobRight;
+
+    public TimeObject(final CharSequence text, final long startTime, final long endTime, final long displayTime) {
         this.text = text;
         this.startTime = startTime;
         this.endTime = endTime;
         this.displayTime = displayTime;
+    }
+
+    public void setOob(boolean outOfBounds, boolean oobLeft, boolean oobRight) {
         this.outOfBounds = outOfBounds;
+        this.oobLeft = oobLeft;
+        this.oobRight = oobRight;
     }
 
     public long getStartTime() {
@@ -49,19 +58,14 @@ public class TimeObject {
 
     @Override
     public String toString() {
-        Calendar start = Calendar.getInstance();
-        start.setTimeInMillis(startTime);
-        Calendar end = Calendar.getInstance();
-        end.setTimeInMillis(endTime);
-        Calendar display = Calendar.getInstance();
-        display.setTimeInMillis(displayTime);
-
         return "TimeObject{" +
                 "text=" + text +
-                ", startTime=" + start.getTime().toString() +
-                ", endTime=" + end.getTime().toString() +
-                ", displayTime=" + display.getTime().toString() +
+                ", displayTime=" + Util.format(displayTime) +
+                ", startTime=" + Util.format(startTime) +
+                ", endTime=" + Util.format(endTime) +
                 ", outOfBounds=" + outOfBounds +
+                ", oobLeft=" + oobLeft +
+                ", oobRight=" + oobRight +
                 '}';
     }
 }

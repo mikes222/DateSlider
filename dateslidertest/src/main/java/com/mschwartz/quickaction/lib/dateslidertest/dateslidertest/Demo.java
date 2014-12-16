@@ -58,6 +58,13 @@ public class Demo extends Activity implements OnClickListener {
         this.findViewById(R.id.timeLimitSelectButton).setOnClickListener(this);
         this.findViewById(R.id.dateTimeSelectButton).setOnClickListener(this);
         this.findViewById(R.id.defaultDateHourSelectButton).setOnClickListener(this);
+
+        if (savedInstanceState != null) {
+            DateSlider dateSlider = (DateSlider)getFragmentManager().findFragmentByTag("dialogFragment");
+            if (dateSlider != null) {
+                dateSlider.setOnDateSetListener(mDateTimeSetListener);
+            }
+        }
     }
 
     // define the listener which is called once a user selected the date.
@@ -114,7 +121,7 @@ public class Demo extends Activity implements OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         DialogFragment dialogFragment = getDemoView(id);
-        dialogFragment.show(getFragmentManager(), null);
+        dialogFragment.show(getFragmentManager(), "dialogFragment");
     }
 
     private DialogFragment getDemoView(int id) {
@@ -128,7 +135,7 @@ public class Demo extends Activity implements OnClickListener {
             minTime.add(Calendar.DAY_OF_MONTH, -7);
             return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime);
         } else if (id == R.id.defaultDateHourSelectButton) {
-            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setHours(9, 17).setMinuteInterval(5);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setHours(9, 14).setMinuteInterval(5);
         } else if (id == R.id.alternativeDateSelectButton) {
             return new AlternativeDateSlider(this, mDateSetListener, c, c, null);
         } else if (id == R.id.customDateSelectButton) {

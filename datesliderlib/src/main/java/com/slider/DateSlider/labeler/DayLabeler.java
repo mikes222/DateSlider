@@ -14,6 +14,8 @@ import java.util.Calendar;
  */
 public class DayLabeler extends Labeler {
 
+    private static String TAG = "DayLabeler";
+
     public DayLabeler(String formatString, TimeBoundaries timeBoundaries) {
         super(formatString, timeBoundaries);
     }
@@ -25,14 +27,19 @@ public class DayLabeler extends Labeler {
 
     @Override
     public TimeObject add(long time, int val) {
-        return Util.addDays(time, val, mFormatString, timeBoundaries);
+        TimeObject result = Util.addDays(time, val, mFormatString, timeBoundaries);
+        //Log.i(TAG, "add " + val + ", " + result.toString());
+        return result;
     }
 
     public TimeObject getElem(long time) {
 
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(time);
-        return Util.getDay(c, mFormatString, timeBoundaries);
+
+        TimeObject result = Util.getDay(c, mFormatString, timeBoundaries);
+        //Log.i(TAG, "getElem " + result.toString());
+        return result;
     }
 
 

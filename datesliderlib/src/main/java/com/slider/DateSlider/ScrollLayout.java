@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 import com.slider.DateSlider.labeler.Labeler;
+import com.slider.DateSlider.labeler.Util;
 import com.slider.DateSlider.timeview.TimeView;
 
 import java.lang.reflect.Constructor;
@@ -218,7 +219,10 @@ public class ScrollLayout extends LinearLayout {
         super.scrollTo(mInitialOffset, 0);
         mScrollX = mInitialOffset;
         mLastScroll = mInitialOffset;
-        setTimeInternal(currentTime, 0);
+        if (mCenterView != null) {
+            // already initialized, allow this method.
+            setTimeInternal(currentTime, 0);
+        }
     }
 
     public void setChild(ScrollLayout child) {
@@ -280,6 +284,9 @@ public class ScrollLayout extends LinearLayout {
     public void setTimeByParent(long time) {
         if (mCenterView.getTimeObject().startTime < time && mCenterView.getTimeObject().endTime > time) {
             // the time has not changed so much, we still show the correct item
+            if (child != null) {
+                child.setTimeByParent(time);
+            }
             return;
         }
 
@@ -294,6 +301,7 @@ public class ScrollLayout extends LinearLayout {
 
     /**
      * Sets the time. This method always repopulate all views with new labels.
+     *
      * @param time
      */
     public void setTime(long time) {
@@ -305,14 +313,14 @@ public class ScrollLayout extends LinearLayout {
             TimeView lastView = (TimeView) getChildAt(i - 1);
             TimeView thisView = (TimeView) getChildAt(i);
             if (thisView != null && lastView != null) {
-                thisView.setTime(mLabeler.add(lastView.getTimeObject().getStartTime(), 1));
+                thisView.setTime(mLabeler.add(lastView.getTimeObject().getDisplayTime(), 1));
             }
         }
         for (int i = centerIndex - 1; i >= 0; i--) {
             TimeView lastView = (TimeView) getChildAt(i + 1);
             TimeView thisView = (TimeView) getChildAt(i);
             if (thisView != null && lastView != null) {
-                thisView.setTime(mLabeler.add(lastView.getTimeObject().getStartTime(), -1));
+                thisView.setTime(mLabeler.add(lastView.getTimeObject().getDisplayTime(), -1));
             }
         }
     }
@@ -325,23 +333,26 @@ public class ScrollLayout extends LinearLayout {
      *              stopped
      */
     private void setTimeInternal(long time, int loops) {
+        if (loops > 2) {
+            Log.d(TAG, String.format("time: %s, start: %s, end: %s", Util.format(currentTime), Util.format(mCenterView.getTimeObject().getStartTime()), Util.format(mCenterView.getTimeObject().getEndTime())));
+            return;
+        }
         currentTime = time;
         if (!mScroller.isFinished()) mScroller.abortAnimation();
-        if (loops > 2 || mCenterView.getTimeObject().getStartTime() <= currentTime && mCenterView.getTimeObject().getEndTime() >= currentTime) {
-            if (loops > 2) {
-                Log.d(TAG, String.format("time: %d, start: %d, end: %d", currentTime, mCenterView.getTimeObject().getStartTime(), mCenterView.getTimeObject().getEndTime()));
-                return;
-            }
+        // time duration of centerview
+        double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
+        if (mCenterView.getTimeObject().getStartTime() <= currentTime && mCenterView.getTimeObject().getEndTime() >= currentTime) {
+            // current time is now in the centerview
             double center = getWidth() / 2.0;
             int left = (getChildCount() / 2) * objWidth - getScrollX();
             double curr_per = (center - left) / objWidth;
-            double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / (double) (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime());
+            double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / diff;
             int shift = (int) Math.round((curr_per - goal_per) * objWidth);
             mScrollX -= shift;
             reScrollTo(mScrollX, 0, false);
         } else {
-            double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
             int steps = (int) Math.round(((currentTime - (mCenterView.getTimeObject().getStartTime() + diff / 2)) / diff));
+            Log.d(TAG, steps + " steps to " + Util.format(currentTime) + " from (" + Util.format(mCenterView.getTimeObject().getStartTime()) + "-" + Util.format(mCenterView.getTimeObject().getEndTime()) + "), " + ((diff + 1) / 1000 / 60) + " min");
             moveElements(-steps);
             setTimeInternal(time, loops + 1);
         }
@@ -353,6 +364,7 @@ public class ScrollLayout extends LinearLayout {
 //            return mCenterView.getTimeObject().startTime;
 //        return (mCenterView.getTimeObject().startTime + mCenterView.getTimeObject().endTime + 1) / 2;
     }
+
     /**
      * scroll the element when the mScroller is still scrolling
      */
@@ -449,6 +461,8 @@ public class ScrollLayout extends LinearLayout {
             int left = (getChildCount() / 2) * objWidth - scrollX;
             double f = (center - left) / objWidth;
             currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * f);
+            currentTime = Util.minStartTime(timeBoundaries, currentTime);
+            currentTime = Util.maxEndTime(timeBoundaries, currentTime);
             //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mCenterView.getTimeObject().toString());
             if (parent != null)
                 parent.setTimeByChild(currentTime);
@@ -505,7 +519,7 @@ public class ScrollLayout extends LinearLayout {
             if (index >= 0 && index < getChildCount()) {
                 tv.setTime(((TimeView) getChildAt(index)).getTimeObject());
             } else {
-                tv.setTime(mLabeler.add(tv.getTimeObject().getStartTime(), -steps));
+                tv.setTime(mLabeler.add(tv.getTimeObject().getDisplayTime(), -steps));
             }
         }
     }

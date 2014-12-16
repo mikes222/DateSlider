@@ -12,7 +12,7 @@
         app:labelerClass="com.slider.DateSlider.labeler.MonthYearLabeler"
         app:labelerFormat="%tb %tY"
         app:childWidth="80dp"
-        app:childHeight="60dp" />
+        app:childHeight="53dp" />
 
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
@@ -25,7 +25,8 @@
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.HourLabeler"
         app:labelerFormat="%tH"
-        app:childWidth="50dp" />
+        app:childWidth="50dp"
+        app:childHeight="40dp"/>
 
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
@@ -33,6 +34,7 @@
         app:labelerFormat="%tM"
         app:childWidth="40dp"
         app:childHeight="30dp" />
+
 
     <include layout="@layout/jumpbuttons" />
 

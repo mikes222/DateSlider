@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.slider.DateSlider.labeler.Util;
+
 import java.util.Calendar;
 
 /**
@@ -16,8 +18,6 @@ import java.util.Calendar;
 public class SliderContainer extends LinearLayout {
 
     private static String TAG = "SliderContainer";
-
-    private static final long MILLISECONDSPERDAY = 24 * 60 * 60 * 1000;
 
     /**
      * The currently selected time. Changes whenever the user moves one of the sliders.
@@ -83,17 +83,8 @@ public class SliderContainer extends LinearLayout {
      * Set the current time and update all of the child ScrollLayouts accordingly.
      */
     public void setTime(Calendar calendar) {
-        if (timeBoundaries.startHour != -1 && timeBoundaries.endHour != -1) {
-            if (timeBoundaries.startHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) < timeBoundaries.startHour * 60 * 60 * 1000 - timeBoundaries.minuteInterval * 30 * 1000) {
-                if (timeBoundaries.minuteInterval > 1)
-                    calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour - 1);
-                else
-                    calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
-            }
-            if (timeBoundaries.endHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) > (timeBoundaries.endHour + 1) * 60 * 60 * 1000 - 1 - timeBoundaries.minuteInterval * 30 * 1000) {
-                calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
-            }
-        }
+        calendar = Util.minStartTime(timeBoundaries, calendar);
+        calendar = Util.maxEndTime(timeBoundaries, calendar);
 
         mTime.setTimeInMillis(calendar.getTimeInMillis());
         if (timeBoundaries.minTime != -1 && mTime.getTimeInMillis() < timeBoundaries.minTime)

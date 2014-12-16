@@ -21,10 +21,14 @@ package com.slider.DateSlider;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.slider.DateSlider.SliderContainer.OnTimeChangeListener;
@@ -61,10 +65,14 @@ public class DateSlider extends DialogFragment {
      */
     protected SliderContainer mContainer;
 
+    protected Button jumpDecYearButton;
     protected Button jumpDecMonthButton;
     protected Button jumpDecWeekButton;
+    protected Button jumpDecDayButton;
+    protected Button jumpIncDayButton;
     protected Button jumpIncWeekButton;
     protected Button jumpIncMonthButton;
+    protected Button jumpIncYearButton;
 
     /**
      * The text to display as title
@@ -156,6 +164,8 @@ public class DateSlider extends DialogFragment {
                 mInitialTime = c;
             }
             tempTimeBoundaries = (TimeBoundaries) savedInstanceState.getSerializable("tempTimeBoundaries");
+            title = savedInstanceState.getString("title");
+            mLayoutID = savedInstanceState.getInt("layout");
         }
     }
 
@@ -171,10 +181,15 @@ public class DateSlider extends DialogFragment {
         dateSliderOkButton = (Button) rootView.findViewById(R.id.dateSliderOkButton);
         dateSliderCancelButton = (Button) rootView.findViewById(R.id.dateSliderCancelButton);
         dateSliderClearButton = (Button) rootView.findViewById(R.id.dateSliderClearButton);
+
+        jumpDecYearButton = (Button) rootView.findViewById(R.id.decYear);
         jumpDecMonthButton = (Button) rootView.findViewById(R.id.decMonth);
         jumpDecWeekButton = (Button) rootView.findViewById(R.id.decWeek);
+        jumpDecDayButton = (Button) rootView.findViewById(R.id.decDay);
+        jumpIncDayButton = (Button) rootView.findViewById(R.id.incDay);
         jumpIncWeekButton = (Button) rootView.findViewById(R.id.incWeek);
         jumpIncMonthButton = (Button) rootView.findViewById(R.id.incMonth);
+        jumpIncYearButton = (Button) rootView.findViewById(R.id.incYear);
 
         mContainer.setOnTimeChangeListener(onTimeChangeListener);
         mContainer.setTime(mInitialTime, tempTimeBoundaries);
@@ -210,6 +225,17 @@ public class DateSlider extends DialogFragment {
             });
         }
 
+        if (jumpDecYearButton != null) {
+            jumpDecYearButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.YEAR, -1);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
         if (jumpDecMonthButton != null) {
             jumpDecMonthButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -227,6 +253,28 @@ public class DateSlider extends DialogFragment {
                 public void onClick(View v) {
                     Calendar c = DateSlider.this.getTime();
                     c.add(Calendar.DATE, -7);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
+        if (jumpDecDayButton != null) {
+            jumpDecDayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.DATE, -1);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
+        if (jumpIncDayButton != null) {
+            jumpIncDayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.DATE, 1);
                     DateSlider.this.setTime(c);
                 }
             });
@@ -254,11 +302,45 @@ public class DateSlider extends DialogFragment {
             });
         }
 
+        if (jumpIncYearButton != null) {
+            jumpIncYearButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Calendar c = DateSlider.this.getTime();
+                    c.add(Calendar.YEAR, 1);
+                    DateSlider.this.setTime(c);
+                }
+            });
+        }
+
         if (getDialog() != null && this.title != null)
             getDialog().setTitle(this.title);
 
         return rootView;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        final HorizontalScrollView jumpButtonsScrollView = (HorizontalScrollView)getView().findViewById(R.id.jumpButtonsScrollView);
+        if (jumpButtonsScrollView != null) {
+            ViewTreeObserver observer = jumpButtonsScrollView.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    LinearLayout layout = (LinearLayout) getView().findViewById(R.id.jumpbuttons);
+                    // larger than screen size
+                    int buttonsWidth = layout.getWidth();
+                    // max. screen size
+                    int scrollWidth = jumpButtonsScrollView.getWidth();
+                    int position = buttonsWidth / 2 - scrollWidth / 2;
+                    Log.i("HERE", "width: " + position);
+                    jumpButtonsScrollView.smoothScrollTo(position, 0);
+                }
+            });
+        }
+    }
+
 
     protected void setTime(Calendar c) {
         mContainer.setTime(c);
@@ -280,6 +362,8 @@ public class DateSlider extends DialogFragment {
         if (outState == null) outState = new Bundle();
         outState.putSerializable("time", getTime());
         outState.putSerializable("tempTimeBoundaries", tempTimeBoundaries);
+        outState.putString("title", title);
+        outState.putInt("layout", mLayoutID);
     }
 
     /**

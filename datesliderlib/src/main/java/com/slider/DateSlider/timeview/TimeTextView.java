@@ -6,6 +6,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import com.slider.DateSlider.R;
 import com.slider.DateSlider.TimeObject;
 
 /**
@@ -44,10 +45,10 @@ public class TimeTextView extends TextView implements TimeView {
         if (isCenterView) {
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, (textSize * 120) / 100);
             setTypeface(Typeface.DEFAULT_BOLD);
-            setTextColor(0xFF333333);
+            setTextColor(getResources().getColor(R.color.centerTextColor));
         } else {
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
-            setTextColor(0xFF999999);
+            setTextColor(getResources().getColor(R.color.textColor));
         }
     }
 
@@ -55,10 +56,22 @@ public class TimeTextView extends TextView implements TimeView {
     public void setTime(TimeObject timeObject) {
         this.timeObject = timeObject;
         setText(timeObject.text);
-        if (timeObject.outOfBounds) {
-            setTextColor(0x44666666);
+        setOutOfBounds(timeObject);
+    }
+
+    private void setOutOfBounds(TimeObject timeObject) {
+        if (timeObject.oobLeft && timeObject.oobRight) {
+            setBackgroundResource(R.drawable.oob_left_right_background);
+        } else if (timeObject.oobLeft) {
+            setBackgroundResource(R.drawable.oob_left_background);
+        } else if (timeObject.oobRight) {
+            setBackgroundResource(R.drawable.oob_right_background);
+        } else if (timeObject.outOfBounds) {
+            setBackgroundResource(R.drawable.oob_background);
+            //setTextColor(getResources().getColor(R.color.oobTextColor));
         } else {
-            setTextColor(0xFF666666);
+            setBackgroundResource(0);
+            //setTextColor(0xFF666666);
         }
     }
 

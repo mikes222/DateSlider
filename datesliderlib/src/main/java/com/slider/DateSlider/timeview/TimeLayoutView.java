@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.slider.DateSlider.R;
 import com.slider.DateSlider.TimeObject;
 
 /**
@@ -83,7 +84,7 @@ public class TimeLayoutView extends LinearLayout implements TimeView {
     public void setTime(TimeObject timeObject) {
         this.timeObject = timeObject;
         setText();
-        setOutOfBounds(timeObject.outOfBounds);
+        setOutOfBounds(timeObject);
     }
 
     @Override
@@ -100,14 +101,21 @@ public class TimeLayoutView extends LinearLayout implements TimeView {
         bottomView.setText(splitTime[1]);
     }
 
-    public void setOutOfBounds(boolean outOfBounds) {
-        if (outOfBounds) {
-            topView.setTextColor(0x44666666);
-            bottomView.setTextColor(0x44666666);
-        } else  {
-            topView.setTextColor(0xFF666666);
-            bottomView.setTextColor(0xFF666666);
+    private void setOutOfBounds(TimeObject timeObject) {
+        if (timeObject.oobLeft && timeObject.oobRight) {
+            setBackgroundResource(R.drawable.oob_left_right_background);
+        } else if (timeObject.oobLeft) {
+            setBackgroundResource(R.drawable.oob_left_background);
+        } else if (timeObject.oobRight) {
+            setBackgroundResource(R.drawable.oob_right_background);
+        } else if (timeObject.outOfBounds) {
+            setBackgroundResource(R.drawable.oob_background);
+            //setTextColor(getResources().getColor(R.color.oobTextColor));
+        } else {
+            setBackgroundResource(0);
+            //setTextColor(0xFF666666);
         }
     }
+
 
 }
