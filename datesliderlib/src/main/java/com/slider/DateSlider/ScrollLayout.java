@@ -463,6 +463,7 @@ public class ScrollLayout extends LinearLayout {
             currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * f);
             currentTime = Util.minStartTime(timeBoundaries, currentTime);
             currentTime = Util.maxEndTime(timeBoundaries, currentTime);
+            currentTime = Util.boundToMinMax(timeBoundaries, currentTime);
             //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mCenterView.getTimeObject().toString());
             if (parent != null)
                 parent.setTimeByChild(currentTime);

@@ -86,11 +86,7 @@ public class SliderContainer extends LinearLayout {
         calendar = Util.minStartTime(timeBoundaries, calendar);
         calendar = Util.maxEndTime(timeBoundaries, calendar);
 
-        mTime.setTimeInMillis(calendar.getTimeInMillis());
-        if (timeBoundaries.minTime != -1 && mTime.getTimeInMillis() < timeBoundaries.minTime)
-            mTime.setTimeInMillis(timeBoundaries.minTime);
-        if (timeBoundaries.maxTime != -1 && mTime.getTimeInMillis() > timeBoundaries.maxTime)
-            mTime.setTimeInMillis(timeBoundaries.maxTime);
+        mTime.setTimeInMillis(Util.boundToMinMax(timeBoundaries, calendar.getTimeInMillis()));
 
         arrangeScrollLayout(null);
     }

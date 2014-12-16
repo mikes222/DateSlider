@@ -344,6 +344,14 @@ public class Util {
         return endTime;
     }
 
+    public static long boundToMinMax(TimeBoundaries timeBoundaries, long time) {
+        if (timeBoundaries.minTime != -1 && time < timeBoundaries.minTime)
+            time = timeBoundaries.minTime;
+        if (timeBoundaries.maxTime != -1 && time > timeBoundaries.maxTime)
+            time = timeBoundaries.maxTime;
+        return time;
+    }
+
     public static Calendar alignMinuteInterval(TimeBoundaries timeBoundaries, Calendar calendar) {
         // set the calendar time to the display time
         int seconds = calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);    // 0-3599
