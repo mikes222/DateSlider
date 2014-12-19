@@ -27,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.slider.DateSlider.DateSlider;
-import com.slider.DateSlider.DateTimeSlider;
 import com.slider.DateSlider.MonthYearDateSlider;
 import com.slider.DateSlider.TimeSlider;
 
@@ -51,16 +50,17 @@ public class Demo extends Activity implements OnClickListener {
 
         this.findViewById(R.id.defaultDateSelectButton).setOnClickListener(this);
         this.findViewById(R.id.defaultDateLimitSelectButton).setOnClickListener(this);
+        this.findViewById(R.id.defaultDateHourSelectButton).setOnClickListener(this);
+        this.findViewById(R.id.defaultDateTimeLimitStartEndSelectButton).setOnClickListener(this);
         this.findViewById(R.id.alternativeDateSelectButton).setOnClickListener(this);
         this.findViewById(R.id.customDateSelectButton).setOnClickListener(this);
         this.findViewById(R.id.monthYearDateSelectButton).setOnClickListener(this);
         this.findViewById(R.id.timeSelectButton).setOnClickListener(this);
         this.findViewById(R.id.timeLimitSelectButton).setOnClickListener(this);
         this.findViewById(R.id.dateTimeSelectButton).setOnClickListener(this);
-        this.findViewById(R.id.defaultDateHourSelectButton).setOnClickListener(this);
 
         if (savedInstanceState != null) {
-            DateSlider dateSlider = (DateSlider)getFragmentManager().findFragmentByTag("dialogFragment");
+            DateSlider dateSlider = (DateSlider) getFragmentManager().findFragmentByTag("dialogFragment");
             if (dateSlider != null) {
                 dateSlider.setOnDateSetListener(mDateTimeSetListener);
             }
@@ -136,6 +136,12 @@ public class Demo extends Activity implements OnClickListener {
             return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime);
         } else if (id == R.id.defaultDateHourSelectButton) {
             return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setHours(9, 14).setMinuteInterval(5);
+        } else if (id == R.id.defaultDateTimeLimitStartEndSelectButton) {
+            final Calendar maxTime = Calendar.getInstance();
+            maxTime.add(Calendar.DAY_OF_MONTH, 14);
+            Calendar minTime = Calendar.getInstance();
+            minTime.add(Calendar.DAY_OF_MONTH, -7);
+            return new DateSlider().setLayout(R.layout.completedatetimeslider2).setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime).setHours(9, 18).setMinuteInterval(60);
         } else if (id == R.id.alternativeDateSelectButton) {
             return new AlternativeDateSlider(this, mDateSetListener, c, c, null);
         } else if (id == R.id.customDateSelectButton) {
@@ -149,7 +155,7 @@ public class Demo extends Activity implements OnClickListener {
             minTime.add(Calendar.HOUR, -2);
             return new TimeSlider(this, mTimeSetListener, c, minTime, c, 5);
         } else if (id == R.id.dateTimeSelectButton) {
-            return new DateTimeSlider(this, mDateTimeSetListener, c, null, null);
+            return new DateSlider().setLayout(R.layout.datetimeslider).setOnDateSetListener(mDateTimeSetListener);
         }
         return null;
     }

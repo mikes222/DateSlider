@@ -80,7 +80,7 @@ public class DateSlider extends DialogFragment {
     private String title;
 
     public DateSlider() {
-        mLayoutID = R.layout.completedateslider;
+        mLayoutID = R.layout.completedatetimeslider;
         setInitialTime(Calendar.getInstance());
     }
 
