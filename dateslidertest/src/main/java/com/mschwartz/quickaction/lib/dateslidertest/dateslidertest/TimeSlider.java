@@ -17,9 +17,11 @@
  * limitations under the License.
  */
 
-package com.slider.DateSlider;
+package com.mschwartz.quickaction.lib.dateslidertest.dateslidertest;
 
 import android.content.Context;
+
+import com.slider.DateSlider.DateSlider;
 
 import java.util.Calendar;
 
@@ -36,15 +38,15 @@ public class TimeSlider extends DateSlider {
     public TimeSlider(Context context, OnDateSetListener l, Calendar calendar,
                       Calendar minTime, Calendar maxTime, int minuteInterval) {
         super();
-        setLayout(R.layout.timeslider);
+        setLayout(com.slider.DateSlider.R.layout.timeslider);
         setOnDateSetListener(l);
         setMinuteInterval(minuteInterval);
         if (calendar != null)
-            setInitialTime(calendar);
+            setInitialTime(calendar.getTimeInMillis());
         if (minTime != null)
-            setMinTime(minTime);
+            setMinTime(minTime.getTimeInMillis());
         if (maxTime != null)
-            setMaxTime(maxTime);
+            setMaxTime(maxTime.getTimeInMillis());
     }
 
     /**

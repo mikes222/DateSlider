@@ -3,8 +3,8 @@ package com.slider.DateSlider;
 import com.slider.DateSlider.labeler.Util;
 
 /**
- * Very simple helper class that defines a time unit with a label (text) its start-
- * and end date
+ * Very simple helper class that defines a time unit with a label (text), its start-
+ * and end time/date. This object represents one label in the UI. It may span one minute/several minutes or one hour/day/week/month/year.
  */
 public class TimeObject {
 
@@ -16,7 +16,7 @@ public class TimeObject {
     public final long startTime;
 
     /**
-     * The end time which is represented by this object
+     * The end time (latest time) which is represented by this object
      */
     public final long endTime;
 
@@ -25,10 +25,19 @@ public class TimeObject {
      */
     public final long displayTime;
 
+    /**
+     * True if the object is completely out of bounds
+     */
     public boolean outOfBounds;
 
+    /**
+     * True if the left (start) time is out of bounds
+     */
     public boolean oobLeft;
 
+    /**
+     * True if the right (end) time is out of bounds
+     */
     public boolean oobRight;
 
     public TimeObject(final CharSequence text, final long startTime, final long endTime, final long displayTime) {

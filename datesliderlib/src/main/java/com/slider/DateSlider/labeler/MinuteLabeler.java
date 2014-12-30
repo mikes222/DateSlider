@@ -36,6 +36,7 @@ public class MinuteLabeler extends Labeler {
     public TimeObject getElem(long time) {
 
         Calendar c = Calendar.getInstance();
+
         c.setTimeInMillis(time);
 
         TimeObject result =  Util.getMinute(c, mFormatString, timeBoundaries);

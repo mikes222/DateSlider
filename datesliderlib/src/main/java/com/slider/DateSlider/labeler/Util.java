@@ -16,10 +16,6 @@ public class Util {
 
     private static String TAG = "Util";
 
-    private static final long MILLISECONDSPERDAY = 24 * 60 * 60 * 1000;
-
-    private static final long MILLISECONDSPERHOUR = 60 * 60 * 1000;
-
 
     public static TimeObject addYears(long time, int years, String formatString, TimeBoundaries timeBoundaries) {
         Calendar c = add(time, years, Calendar.YEAR);
@@ -64,12 +60,19 @@ public class Util {
 
         for (int i = 0; i < Math.abs(hours); ++i) {
             c.add(Calendar.HOUR_OF_DAY, incdec);
-            if (timeBoundaries.startHour != -1 && (c.getTimeInMillis() % MILLISECONDSPERDAY) < timeBoundaries.startHour * MILLISECONDSPERHOUR) { // - timeBoundaries.minuteInterval * 30 * 1000) {
+            if (timeBoundaries.startHour != -1 && c.get(Calendar.HOUR_OF_DAY) < timeBoundaries.startHour) {
                 c.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
+                if (timeBoundaries.minuteInterval > 60)
+                    c.add(Calendar.HOUR_OF_DAY, timeBoundaries.minuteInterval / -60 + 1);
                 c.add(Calendar.DATE, -1);
-            } else if (timeBoundaries.endHour != -1 && (c.getTimeInMillis() % MILLISECONDSPERDAY) >= (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR) { // - 1 - timeBoundaries.minuteInterval * 30 * 1000) {
-                c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
-                c.add(Calendar.DATE, 1);
+            } else if (timeBoundaries.endHour != -1 && c.get(Calendar.HOUR_OF_DAY) >= timeBoundaries.endHour) {
+
+                Calendar reference = createReference(timeBoundaries, c);
+
+                if (c.getTimeInMillis() > reference.getTimeInMillis()) {
+                    c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
+                    c.add(Calendar.DATE, 1);
+                }
             }
         }
         return getHour(c, formatString, timeBoundaries);
@@ -85,12 +88,18 @@ public class Util {
 
         for (int i = 0; i < Math.abs(minutes); ++i) {
             c.add(Calendar.MINUTE, incdec * timeBoundaries.minuteInterval);
-            if (timeBoundaries.startHour != -1 && (c.getTimeInMillis() % MILLISECONDSPERDAY) < timeBoundaries.startHour * MILLISECONDSPERHOUR) { // - timeBoundaries.minuteInterval * 30 * 1000) {
+            if (timeBoundaries.startHour != -1 && c.get(Calendar.HOUR_OF_DAY) < timeBoundaries.startHour) {
                 c.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
+                if (timeBoundaries.minuteInterval > 60)
+                    c.add(Calendar.HOUR_OF_DAY, timeBoundaries.minuteInterval / -60 + 1);
                 c.add(Calendar.DATE, -1);
-            } else if (timeBoundaries.endHour != -1 && (c.getTimeInMillis() % MILLISECONDSPERDAY) >= (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR) { // - 1 - timeBoundaries.minuteInterval * 30 * 1000) {
-                c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
-                c.add(Calendar.DATE, 1);
+            } else if (timeBoundaries.endHour != -1 && c.get(Calendar.HOUR_OF_DAY) >= timeBoundaries.endHour) {
+
+                Calendar reference = createReference(timeBoundaries, c);
+                if (c.getTimeInMillis() > reference.getTimeInMillis()) {
+                    c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
+                    c.add(Calendar.DATE, 1);
+                }
             }
         }
         return getMinute(c, formatString, timeBoundaries);
@@ -106,30 +115,28 @@ public class Util {
         if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime < timeObject.getEndTime()) {
             oob = true;
         }
-        if (timeBoundaries.minTime != -1 && timeBoundaries.minTime > timeObject.getStartTime() && timeBoundaries.minTime < timeObject.getEndTime()) {
+        if (timeBoundaries.minTime != -1 && timeBoundaries.minTime > timeObject.getStartTime() && timeBoundaries.minTime <= timeObject.getEndTime()) {
             oobLeft = true;
             oob = false;
         }
-        if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime < timeObject.getEndTime() && timeBoundaries.maxTime > timeObject.getStartTime()) {
+        if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime > timeObject.getStartTime() && timeBoundaries.maxTime <= timeObject.getEndTime()) {
             oobRight = true;
             oob = false;
         }
         if (checkHours) {
-            if (timeBoundaries.startHour != -1 && timeBoundaries.startHour * MILLISECONDSPERHOUR == (timeObject.getStartTime() % MILLISECONDSPERDAY)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timeObject.getStartTime());
+            if (timeBoundaries.startHour != -1 && timeBoundaries.startHour == calendar.get(Calendar.HOUR_OF_DAY) && calendar.get(Calendar.MINUTE) == 0) {
                 oobLeft = true;
-            } else if (timeBoundaries.endHour != -1 && (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR - 1 - timeBoundaries.minuteInterval * 30 * 1000 == (timeObject.getEndTime() % MILLISECONDSPERDAY)) {
-                oobRight = true;
+            } else if (timeBoundaries.endHour != -1) {
+                calendar.setTimeInMillis(timeObject.getEndTime());
+                Calendar reference = createReference(timeBoundaries, calendar);
+
+                if (calendar.getTimeInMillis() >= reference.getTimeInMillis())
+                    oobRight = true;
             }
         }
         timeObject.setOob(oob, oobLeft, oobRight);
-    }
-
-    public static boolean isOutOfBounds(long startTime, long endTime, TimeBoundaries timeBoundaries) {
-        if (timeBoundaries.minTime != -1 && timeBoundaries.minTime > startTime)
-            return true;
-        if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime < endTime)
-            return true;
-        return false;
     }
 
     public static TimeObject getYear(Calendar c, String formatString, TimeBoundaries timeBoundaries) {
@@ -146,11 +153,11 @@ public class Util {
         // decrement at the half of the minuteinterval
         c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
 
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
         // set calendar to last millisecond of the year
         c.set(year, Calendar.DECEMBER, 31, 23, 59, 59);
         c.set(Calendar.MILLISECOND, 999);
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, false);
         return timeObject;
@@ -172,12 +179,12 @@ public class Util {
         // decrement at the half of the minuteinterval
         c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
 
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
         // set calendar to last millisecond of the month
         c.add(Calendar.MONTH, 1);
         c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
         c.add(Calendar.MILLISECOND, -1);
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, false);
         return timeObject;
@@ -201,11 +208,11 @@ public class Util {
         // decrement at the half of the minuteinterval
         c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
 
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
         // set calendar to last millisecond of the week
         c.add(Calendar.DATE, 7);
         c.add(Calendar.MILLISECOND, -1);
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, false);
         return timeObject;
@@ -219,7 +226,6 @@ public class Util {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
         // set calendar to first millisecond of the day
-        //noinspection ResourceType
         c.set(year, month, day, 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
         long displayTime = c.getTimeInMillis();
@@ -232,19 +238,19 @@ public class Util {
             // decrement at the half of the minuteinterval
             c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
         }
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
 
         // set calendar to last millisecond of the day
         if (timeBoundaries.endHour != -1) {
             c.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
-            // maxEndTime will truncate to the last alllowed time of day.
+            // maxEndTime will truncate to the last allowed time of day.
             c.set(Calendar.MINUTE, 59);
+            c.set(Calendar.SECOND, 59);
         } else {
-            //noinspection ResourceType
             c.add(Calendar.DATE, 1);
             c.add(Calendar.MILLISECOND, -1);
         }
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
 
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, false);
@@ -260,7 +266,6 @@ public class Util {
         int day = c.get(Calendar.DAY_OF_MONTH);
         int hour = c.get(Calendar.HOUR_OF_DAY);
         // get the first millisecond of that hour
-        //noinspection ResourceType
         c.set(year, month, day, hour, 0, 0);
 
         long displayTime = c.getTimeInMillis();
@@ -268,13 +273,15 @@ public class Util {
 
         // decrement at the half of the minuteinterval
         c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
+        long temp = c.getTimeInMillis();
 
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
+
         // get the last millisecond of that hour
-        //noinspection ResourceType
+        c.setTimeInMillis(temp);
         c.add(Calendar.HOUR, 1);
         c.add(Calendar.MILLISECOND, -1);
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
 
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, true);
@@ -289,13 +296,13 @@ public class Util {
 
         // decrement at the half of the minuteinterval
         c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
-        long startTime = minStartTime(timeBoundaries, c.getTimeInMillis());
+        long temp = c.getTimeInMillis();
+        long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
 
-        c.setTimeInMillis(startTime);
-        //noinspection ResourceType
+        c.setTimeInMillis(temp);
         c.add(Calendar.MINUTE, timeBoundaries.minuteInterval);
         c.add(Calendar.MILLISECOND, -1);
-        long endTime = maxEndTime(timeBoundaries, c.getTimeInMillis());
+        long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
 
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, true);
@@ -310,7 +317,7 @@ public class Util {
     }
 
     public static Calendar minStartTime(TimeBoundaries timeBoundaries, Calendar calendar) {
-        if (timeBoundaries.startHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) < timeBoundaries.startHour * MILLISECONDSPERHOUR) { // - timeBoundaries.minuteInterval * 30 * 1000) {
+        if (timeBoundaries.startHour != -1 && calendar.get(Calendar.HOUR_OF_DAY) < timeBoundaries.startHour) { // - timeBoundaries.minuteInterval * 30 * 1000) {
             calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
@@ -319,32 +326,28 @@ public class Util {
         return calendar;
     }
 
-    public static long minStartTime(TimeBoundaries timeBoundaries, long startTime) {
-        if (timeBoundaries.startHour != -1 && (startTime % MILLISECONDSPERDAY) < timeBoundaries.startHour * MILLISECONDSPERHOUR) {
-            startTime = startTime - (startTime % MILLISECONDSPERDAY) + timeBoundaries.startHour * MILLISECONDSPERHOUR;
-        }
-        return startTime;
-    }
-
     public static Calendar maxEndTime(TimeBoundaries timeBoundaries, Calendar calendar) {
-        if (timeBoundaries.endHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) >= (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR - timeBoundaries.minuteInterval * 30 * 1000) {
-            calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
-            calendar.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
+        if (timeBoundaries.endHour != -1) {
+
+            Calendar reference = createReference(timeBoundaries, calendar);
+            if (calendar.getTimeInMillis() > reference.getTimeInMillis())
+                return reference;
         }
         return calendar;
     }
 
-    public static long maxEndTime(TimeBoundaries timeBoundaries, long endTime) {
-        if (timeBoundaries.endHour != -1 && (endTime % MILLISECONDSPERDAY) >= (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR - timeBoundaries.minuteInterval * 30 * 1000) {
-            endTime = endTime - (endTime % MILLISECONDSPERDAY) + (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR - 1 - timeBoundaries.minuteInterval * 30 * 1000;
-        }
-        return endTime;
+    protected static Calendar createReference(TimeBoundaries timeBoundaries, Calendar calendar) {
+        Calendar reference = Calendar.getInstance();
+        reference.setTimeInMillis(calendar.getTimeInMillis());
+        reference.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
+        reference.set(Calendar.MINUTE, 59);
+        reference.set(Calendar.SECOND, 59);
+        reference.set(Calendar.MILLISECOND, 999);
+        reference.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
+        return reference;
     }
 
-    public static long boundToMinMax(TimeBoundaries timeBoundaries, long time) {
+    public static long bindToMinMax(TimeBoundaries timeBoundaries, long time) {
         if (timeBoundaries.minTime != -1 && time < timeBoundaries.minTime)
             time = timeBoundaries.minTime;
         if (timeBoundaries.maxTime != -1 && time > timeBoundaries.maxTime)
@@ -352,30 +355,24 @@ public class Util {
         return time;
     }
 
+    /**
+     * aligns the given calendar time to the nearest minute interval.
+     *
+     * @param timeBoundaries
+     * @param calendar
+     * @return
+     */
     public static Calendar alignMinuteInterval(TimeBoundaries timeBoundaries, Calendar calendar) {
         // set the calendar time to the display time
-        int seconds = calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);    // 0-3599
-        int nextBoundary = seconds / timeBoundaries.minuteInterval / 60 * timeBoundaries.minuteInterval * 60; // e.g. 3300
-        if (((seconds - nextBoundary) % (timeBoundaries.minuteInterval * 60)) >= timeBoundaries.minuteInterval * 30) // true
+        int secondsOfDay = calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 + calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);    // 0-3599
+        int nextBoundary = secondsOfDay / timeBoundaries.minuteInterval / 60 * timeBoundaries.minuteInterval * 60; // e.g. 3300
+        if (((secondsOfDay - nextBoundary) % (timeBoundaries.minuteInterval * 60)) >= timeBoundaries.minuteInterval * 30) // true
             nextBoundary += timeBoundaries.minuteInterval * 60;
-        int diff = nextBoundary - seconds; // e.g. -5
+        int diff = nextBoundary - secondsOfDay; // e.g. -5
         calendar.add(Calendar.SECOND, diff); // e.g. 15
 
         calendar.set(Calendar.MILLISECOND, 0);
 
-        if (timeBoundaries.startHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) < timeBoundaries.startHour * MILLISECONDSPERHOUR) { // - timeBoundaries.minuteInterval * 30 * 1000) {
-            calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
-//            calendar.set(Calendar.MINUTE, 0);
-//            calendar.set(Calendar.SECOND, 0);
-//            calendar.set(Calendar.MILLISECOND, 0);
-        }
-        // if we have endHour set we need to change to endHour - minuteInterval
-        if (timeBoundaries.endHour != -1 && (calendar.getTimeInMillis() % MILLISECONDSPERDAY) >= (timeBoundaries.endHour + 1) * MILLISECONDSPERHOUR) { // - timeBoundaries.minuteInterval * 30 * 1000) {
-//            calendar.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
-            calendar.add(Calendar.MINUTE, timeBoundaries.minuteInterval * -1);
-//            calendar.set(Calendar.SECOND, 59);
-//            calendar.set(Calendar.MILLISECOND, 999);
-        }
         return calendar;
     }
 

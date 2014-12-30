@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
-package com.slider.DateSlider;
+package com.mschwartz.quickaction.lib.dateslidertest.dateslidertest;
 
 import android.content.Context;
+
+import com.slider.DateSlider.DateSlider;
 
 import java.util.Calendar;
 
@@ -31,14 +33,14 @@ public class MonthYearDateSlider extends DateSlider {
     public MonthYearDateSlider(Context context, OnDateSetListener l, Calendar calendar,
                                Calendar minDate, Calendar maxDate) {
         super();
-        setLayout(R.layout.monthyeardateslider);
+        setLayout(com.slider.DateSlider.R.layout.monthyeardateslider);
         setOnDateSetListener(l);
         if (calendar != null)
-            setInitialTime(calendar);
+            setInitialTime(calendar.getTimeInMillis());
         if (minDate != null)
-            setMinTime(minDate);
+            setMinTime(minDate.getTimeInMillis());
         if (maxDate != null)
-            setMaxTime(maxDate);
+            setMaxTime(maxDate.getTimeInMillis());
     }
 
     /**
@@ -47,7 +49,7 @@ public class MonthYearDateSlider extends DateSlider {
     @Override
     protected void setTitle(Calendar time) {
         if (mTitleText != null) {
-            mTitleText.setText(getString(R.string.dateSliderTitle) +
+            mTitleText.setText(getString(com.slider.DateSlider.R.string.dateSliderTitle) +
                     String.format(": %tB %tY", time, time));
         }
     }

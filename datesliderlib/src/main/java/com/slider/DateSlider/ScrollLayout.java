@@ -38,6 +38,7 @@ import com.slider.DateSlider.labeler.Util;
 import com.slider.DateSlider.timeview.TimeView;
 
 import java.lang.reflect.Constructor;
+import java.util.Calendar;
 
 /**
  * This is where most of the magic happens. This is a subclass of LinearLayout
@@ -55,6 +56,7 @@ public class ScrollLayout extends LinearLayout {
     private static String TAG = "ScrollLayout";
 
     private Scroller mScroller;
+
     /**
      * Indicates if we are currently tracking touch events that are dragging
      * (scrolling) us.
@@ -65,8 +67,9 @@ public class ScrollLayout extends LinearLayout {
      * Indicates if we are dragging or clicking. dragging = true
      */
     private boolean moveMode;
+
     /**
-     * The aggregate width of all of our children
+     * The aggregated width of all of our children
      */
     private int childrenWidth;
 
@@ -77,6 +80,7 @@ public class ScrollLayout extends LinearLayout {
      * left-aligning them. This variable tracks how much to scroll to achieve this.
      */
     private int mInitialOffset;
+
     private int mLastX, mLastScroll, mScrollX;
     private VelocityTracker mVelocityTracker;
     private int mMinimumVelocity;
@@ -270,11 +274,21 @@ public class ScrollLayout extends LinearLayout {
 
     public void setTimeByChild(long time) {
         if (mCenterView.getTimeObject().startTime < time && mCenterView.getTimeObject().endTime > time) {
+            currentTime = time;
             // the time has not changed so much, we still show the correct item
+            double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
+            // current time is now in the centerview
+            double center = getWidth() / 2.0;
+            int left = (getChildCount() / 2) * objWidth - getScrollX();
+            double curr_per = (center - left) / objWidth;
+            double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / diff;
+            int shift = (int) Math.round((curr_per - goal_per) * objWidth);
+            mScrollX -= shift;
+            reScrollTo(mScrollX, 0, false);
             return;
+        } else {
+            setTime(time);
         }
-
-        setTime(time);
 
         if (parent != null) {
             parent.setTimeByChild(time);
@@ -461,9 +475,11 @@ public class ScrollLayout extends LinearLayout {
             int left = (getChildCount() / 2) * objWidth - scrollX;
             double f = (center - left) / objWidth;
             currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * f);
-            currentTime = Util.minStartTime(timeBoundaries, currentTime);
-            currentTime = Util.maxEndTime(timeBoundaries, currentTime);
-            currentTime = Util.boundToMinMax(timeBoundaries, currentTime);
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(currentTime);
+            c = Util.minStartTime(timeBoundaries, c);
+            c = Util.maxEndTime(timeBoundaries, c);
+            currentTime = Util.bindToMinMax(timeBoundaries, c.getTimeInMillis());
             //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mCenterView.getTimeObject().toString());
             if (parent != null)
                 parent.setTimeByChild(currentTime);
@@ -562,9 +578,8 @@ public class ScrollLayout extends LinearLayout {
                 break;
             case MotionEvent.ACTION_UP:
                 if (moveMode) {
-                    final VelocityTracker velocityTracker = mVelocityTracker;
-                    velocityTracker.computeCurrentVelocity(1000);
-                    int initialVelocity = (int) velocityTracker.getXVelocity();
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    int initialVelocity = (int) mVelocityTracker.getXVelocity();
                     if (initialVelocity > mMaximumVelocity)
                         initialVelocity = mMaximumVelocity;
                     if (initialVelocity < mMaximumVelocity * -1)

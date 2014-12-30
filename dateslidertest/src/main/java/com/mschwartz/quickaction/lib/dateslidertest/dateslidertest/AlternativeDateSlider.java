@@ -37,10 +37,10 @@ public class AlternativeDateSlider extends DateSlider {
         setLayout(R.layout.altdateslider);
         setOnDateSetListener(l);
         if (calendar != null)
-            setInitialTime(calendar);
+            setInitialTime(calendar.getTimeInMillis());
         if (minDate != null)
-            setMinTime(minDate);
+            setMinTime(minDate.getTimeInMillis());
         if (maxDate != null)
-            setMaxTime(maxDate);
+            setMaxTime(maxDate.getTimeInMillis());
     }
 }

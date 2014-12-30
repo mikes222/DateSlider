@@ -11,7 +11,7 @@ import java.util.Calendar;
 
 /**
  * This is a container class for ScrollLayouts. It coordinates the scrolling
- * between them, so that if one is scrolled, the others are scrolled to
+ * between them, so that if one is scrolled, the others are scrolled too to
  * keep a consistent display of the time. It also notifies an optional
  * observer anytime the time is changed.
  */
@@ -20,7 +20,7 @@ public class SliderContainer extends LinearLayout {
     private static String TAG = "SliderContainer";
 
     /**
-     * The currently selected time. Changes whenever the user moves one of the sliders.
+     * The currently selected time in local timezone. Changes whenever the user moves one of the sliders.
      */
     private Calendar mTime = Calendar.getInstance();
 
@@ -66,16 +66,35 @@ public class SliderContainer extends LinearLayout {
     }
 
     public void setTime(Calendar calendar, TimeBoundaries tempTimeBoundaries) {
-        if (tempTimeBoundaries.minTime != -1)
-            timeBoundaries.minTime = tempTimeBoundaries.minTime;
-        if (tempTimeBoundaries.maxTime != -1)
-            timeBoundaries.maxTime = tempTimeBoundaries.maxTime;
         if (tempTimeBoundaries.minuteInterval > 1)
             timeBoundaries.minuteInterval = tempTimeBoundaries.minuteInterval;
-        if (tempTimeBoundaries.startHour != -1)
-            timeBoundaries.startHour = tempTimeBoundaries.startHour;
-        if (tempTimeBoundaries.endHour != -1)
-            timeBoundaries.endHour = tempTimeBoundaries.endHour;
+        if (tempTimeBoundaries.startHour != -1) {
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.HOUR_OF_DAY, tempTimeBoundaries.startHour);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            timeBoundaries.startHour = Util.alignMinuteInterval(timeBoundaries, c).get(Calendar.HOUR_OF_DAY);
+        }
+        if (tempTimeBoundaries.endHour != -1) {
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.HOUR_OF_DAY, tempTimeBoundaries.endHour);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            c.add(Calendar.MILLISECOND, -1);
+            timeBoundaries.endHour = Util.alignMinuteInterval(timeBoundaries, c).get(Calendar.HOUR_OF_DAY) + 1;
+        }
+        if (tempTimeBoundaries.minTime != -1) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(tempTimeBoundaries.minTime);
+            timeBoundaries.minTime = Util.maxEndTime(timeBoundaries, Util.minStartTime(timeBoundaries, c)).getTimeInMillis();
+        }
+        if (tempTimeBoundaries.maxTime != -1) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(tempTimeBoundaries.maxTime);
+            timeBoundaries.maxTime = Util.maxEndTime(timeBoundaries, Util.minStartTime(timeBoundaries, c)).getTimeInMillis();
+        }
         setTime(calendar);
     }
 
@@ -83,10 +102,11 @@ public class SliderContainer extends LinearLayout {
      * Set the current time and update all of the child ScrollLayouts accordingly.
      */
     public void setTime(Calendar calendar) {
+        calendar = Util.alignMinuteInterval(timeBoundaries, calendar);
         calendar = Util.minStartTime(timeBoundaries, calendar);
         calendar = Util.maxEndTime(timeBoundaries, calendar);
 
-        mTime.setTimeInMillis(Util.boundToMinMax(timeBoundaries, calendar.getTimeInMillis()));
+        mTime.setTimeInMillis(Util.bindToMinMax(timeBoundaries, calendar.getTimeInMillis()));
 
         arrangeScrollLayout(null);
     }

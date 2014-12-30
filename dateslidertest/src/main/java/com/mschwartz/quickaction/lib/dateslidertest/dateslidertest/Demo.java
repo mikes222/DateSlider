@@ -27,8 +27,6 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.slider.DateSlider.DateSlider;
-import com.slider.DateSlider.MonthYearDateSlider;
-import com.slider.DateSlider.TimeSlider;
 
 import java.util.Calendar;
 
@@ -133,7 +131,7 @@ public class Demo extends Activity implements OnClickListener {
             maxTime.add(Calendar.DAY_OF_MONTH, 14);
             Calendar minTime = Calendar.getInstance();
             minTime.add(Calendar.DAY_OF_MONTH, -7);
-            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime);
+            return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime.getTimeInMillis()).setMinTime(minTime.getTimeInMillis());
         } else if (id == R.id.defaultDateHourSelectButton) {
             return new DateSlider().setOnDateSetListener(mDateTimeSetListener).setHours(9, 14).setMinuteInterval(5);
         } else if (id == R.id.defaultDateTimeLimitStartEndSelectButton) {
@@ -141,7 +139,7 @@ public class Demo extends Activity implements OnClickListener {
             maxTime.add(Calendar.DAY_OF_MONTH, 14);
             Calendar minTime = Calendar.getInstance();
             minTime.add(Calendar.DAY_OF_MONTH, -7);
-            return new DateSlider().setLayout(R.layout.completedatetimeslider2).setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime).setMinTime(minTime).setHours(9, 18).setMinuteInterval(60);
+            return new DateSlider().setLayout(R.layout.completedatetimeslider2).setOnDateSetListener(mDateTimeSetListener).setMaxTime(maxTime.getTimeInMillis()).setMinTime(minTime.getTimeInMillis()).setHours(3, 11).setMinuteInterval(120);
         } else if (id == R.id.alternativeDateSelectButton) {
             return new AlternativeDateSlider(this, mDateSetListener, c, c, null);
         } else if (id == R.id.customDateSelectButton) {

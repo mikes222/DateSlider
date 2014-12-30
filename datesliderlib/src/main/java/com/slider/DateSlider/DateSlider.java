@@ -46,7 +46,10 @@ public class DateSlider extends DialogFragment {
 
     protected OnDateSetListener onDateSetListener;
 
-    protected Calendar mInitialTime;
+    /**
+     * The initial time in utc to be used when creating the slider
+     */
+    protected long mInitialTime;
 
     protected int mLayoutID;
 
@@ -79,11 +82,19 @@ public class DateSlider extends DialogFragment {
      */
     private String title;
 
+    /**
+     * Constructor
+     */
     public DateSlider() {
         mLayoutID = R.layout.completedatetimeslider;
-        setInitialTime(Calendar.getInstance());
+        setInitialTime(Calendar.getInstance().getTimeInMillis());
     }
 
+    /**
+     * Sets the id of the layout to be used. Consider R.layout.someLayout.
+     * @param layoutID
+     * @return
+     */
     public DateSlider setLayout(int layoutID) {
         mLayoutID = layoutID;
         return this;
@@ -94,24 +105,43 @@ public class DateSlider extends DialogFragment {
         return this;
     }
 
-    public DateSlider setMinTime(Calendar minTime) {
-        tempTimeBoundaries.minTime = minTime.getTimeInMillis();
+    /**
+     * Sets the minimum allowed time in utc timezone. The Class will not return or allow to chose a time beyond the given parameter.
+     * @param minTime
+     * @return DateSlider
+     */
+    public DateSlider setMinTime(long minTime) {
+        tempTimeBoundaries.minTime = minTime;
         if (mContainer != null) {
             mContainer.setMinTime(tempTimeBoundaries.minTime);
         }
         return this;
     }
 
-    public DateSlider setMaxTime(Calendar maxTime) {
-        tempTimeBoundaries.maxTime = maxTime.getTimeInMillis();
+    /**
+     * Sets the maximum allowed time in utc timezone. The Class will not return or allow to chose a time beyond the given parameter.
+     * @param maxTime
+     * @return DateSlider
+     */
+    public DateSlider setMaxTime(long maxTime) {
+        tempTimeBoundaries.maxTime = maxTime;
         if (mContainer != null) {
             mContainer.setMaxTime(tempTimeBoundaries.maxTime);
         }
         return this;
     }
 
+    /**
+     * Sets the interval for the "minute" part of the timeslider. Allowed range is from 1 to 120
+     * whereas only certain values are reasonable. Consider the following values:
+     * 1,2,5,10,15,30,60,120
+     *
+     * @param minuteInterval The minute interval used for the slider
+     * @return DateSlider
+     */
     public DateSlider setMinuteInterval(int minuteInterval) {
-        assert (minuteInterval >= 1 && minuteInterval < 60);
+        assert (minuteInterval >= 1 && minuteInterval <= 120);
+        assert ((minuteInterval % 60) == 0);
         tempTimeBoundaries.minuteInterval = minuteInterval;
         if (mContainer != null) {
             mContainer.setMinuteInterval(minuteInterval);
@@ -119,21 +149,28 @@ public class DateSlider extends DialogFragment {
         return this;
     }
 
-    public DateSlider setInitialTime(Calendar initialTime) {
-        mInitialTime = Calendar.getInstance(initialTime.getTimeZone());
-        mInitialTime.setTimeInMillis(initialTime.getTimeInMillis());
+    /**
+     * Sets the time in utc timezone.
+     * @param initialTime
+     * @return
+     */
+    public DateSlider setInitialTime(long initialTime) {
+        mInitialTime = initialTime;
 
         if (mContainer != null) {
-            mContainer.setTime(mInitialTime);
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(initialTime);
+            mContainer.setTime(c);
         }
         return this;
     }
 
     /**
-     * Sets the start- and end hours. This can be used if the calendar should only accept working hours. Make sure that either both
+     * Sets the start- and end hours in locale-specific timezone. This can be used if the calendar should only accept working hours. Make sure that either both
      * are set to -1 or both are set to a value from 0 to 23 whereas starthours must be before endHours. Note that endHours
      * only specify the "hour" part of the calender but does not restrict the minutes. In other words setting the endHour to 17
-     * allows times up to 17:59 (5:59pm).
+     * allows times up to 17:59 (5:59pm). When setting the minuteInterval to values larger than 60 take care to set the start and endHours accordingly. For
+     * example when setting minuteInterval to 120, the startHour should be dividable by 2 (8, 10, 12) whereas the endHour should be an odd number (13, 15, 17)
      *
      * @param startHour
      * @param endHour
@@ -159,8 +196,8 @@ public class DateSlider extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            Calendar c = (Calendar) savedInstanceState.getSerializable("time");
-            if (c != null) {
+            Long c = savedInstanceState.getLong("time");
+            if (c != 0) {
                 mInitialTime = c;
             }
             tempTimeBoundaries = (TimeBoundaries) savedInstanceState.getSerializable("tempTimeBoundaries");
@@ -192,7 +229,9 @@ public class DateSlider extends DialogFragment {
         jumpIncYearButton = (Button) rootView.findViewById(R.id.incYear);
 
         mContainer.setOnTimeChangeListener(onTimeChangeListener);
-        mContainer.setTime(mInitialTime, tempTimeBoundaries);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(mInitialTime);
+        mContainer.setTime(c, tempTimeBoundaries);
 
         if (dateSliderOkButton != null) {
             dateSliderOkButton.setOnClickListener(new View.OnClickListener() {
@@ -342,6 +381,10 @@ public class DateSlider extends DialogFragment {
     }
 
 
+    /**
+     * Used by the jump-Buttons to change the time of the slider
+     * @param c
+     */
     protected void setTime(Calendar c) {
         mContainer.setTime(c);
     }
@@ -390,6 +433,7 @@ public class DateSlider extends DialogFragment {
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////
 
     /**
      * Defines the interface which defines the methods of the OnDateSetListener

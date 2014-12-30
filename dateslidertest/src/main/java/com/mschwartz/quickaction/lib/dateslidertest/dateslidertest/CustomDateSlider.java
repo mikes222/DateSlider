@@ -31,7 +31,7 @@ public class CustomDateSlider extends DateSlider {
         super();
         setLayout(com.slider.DateSlider.R.layout.customdateslider);
         setOnDateSetListener(l);
-        setInitialTime(calendar);
+        setInitialTime(calendar.getTimeInMillis());
     }
 
     /**
