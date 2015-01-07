@@ -62,7 +62,6 @@ public class TimeTextView extends TextView implements TimeView {
     private void setOutOfBounds(TimeObject timeObject) {
         if (timeObject.outOfBounds) {
             setBackgroundResource(R.drawable.oob_background);
-            //setTextColor(getResources().getColor(R.color.oobTextColor));
         } else if (timeObject.oobLeft && timeObject.oobRight) {
             setBackgroundResource(R.drawable.oob_left_right_background);
         } else if (timeObject.oobLeft) {
@@ -71,7 +70,6 @@ public class TimeTextView extends TextView implements TimeView {
             setBackgroundResource(R.drawable.oob_right_background);
         } else {
             setBackgroundResource(0);
-            //setTextColor(0xFF666666);
         }
     }
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dateSliderTitle">Datum wählen</string>
+    <string name="app_name">DateSlider Demo</string>
+    <string name="setdatetime">Setzen</string>
+    <string name="cleardatetime">Löschen</string>
+    <string name="canceldatetime">Abbrechen</string>
+    <string name="dec1month">-1 Monat</string>
+    <string name="inc1month">+1 Monat</string>
+    <string name="inc1week">+1 Woche</string>
+    <string name="dec1week">-1 Woche</string>
+    <string name="dec1day">-1 Tag</string>
+    <string name="inc1day">+1 Tag</string>
+    <string name="inc1year">+1 Jahr</string>
+    <string name="dec1year">-1 Jahr</string>
+</resources>

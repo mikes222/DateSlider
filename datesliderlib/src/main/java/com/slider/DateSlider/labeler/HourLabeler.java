@@ -14,6 +14,8 @@ import java.util.Calendar;
  */
 public class HourLabeler extends Labeler {
 
+    private static String TAG = "HourLabeler";
+
     public HourLabeler(String formatString, TimeBoundaries timeBoundaries) {
         super(formatString, timeBoundaries);
     }
@@ -26,12 +28,16 @@ public class HourLabeler extends Labeler {
     public TimeObject getElem(long time) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(time);
-        return Util.getHour(c, mFormatString, timeBoundaries);
+        TimeObject result =  Util.getHour(c, mFormatString, timeBoundaries);
+        //Log.i(TAG, "getElem " + result.toString());
+        return result;
     }
 
     @Override
     public TimeObject add(long time, int val) {
-        return Util.addHours(time, val, mFormatString, timeBoundaries);
+        TimeObject result = Util.addHours(time, val, mFormatString, timeBoundaries);
+        //Log.i(TAG, "add " + val + ", " + result.toString());
+        return result;
     }
 
 }

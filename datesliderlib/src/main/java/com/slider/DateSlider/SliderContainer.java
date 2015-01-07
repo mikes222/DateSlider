@@ -102,11 +102,13 @@ public class SliderContainer extends LinearLayout {
      * Set the current time and update all of the child ScrollLayouts accordingly.
      */
     public void setTime(Calendar calendar) {
-        calendar = Util.alignMinuteInterval(timeBoundaries, calendar);
+        // first bind the time to the min and max start/end times, then align it. Goal is to get the displayed time.
+        calendar.setTimeInMillis(Util.bindToMinMax(timeBoundaries, calendar.getTimeInMillis()));
         calendar = Util.minStartTime(timeBoundaries, calendar);
         calendar = Util.maxEndTime(timeBoundaries, calendar);
+        calendar = Util.alignMinuteInterval(timeBoundaries, calendar);
 
-        mTime.setTimeInMillis(Util.bindToMinMax(timeBoundaries, calendar.getTimeInMillis()));
+        mTime.setTimeInMillis(calendar.getTimeInMillis());
 
         arrangeScrollLayout(null);
     }
@@ -166,12 +168,12 @@ public class SliderContainer extends LinearLayout {
             if (v instanceof ScrollLayout) {
                 ScrollLayout scroller = (ScrollLayout) v;
                 scroller.setTime(mTime.getTimeInMillis());
-                if (scroller.getChild() == null && mOnTimeChangeListener != null) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(scroller.getTime());
-                    mOnTimeChangeListener.onTimeChange(calendar);
-                }
             }
+        }
+        if (mOnTimeChangeListener != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(mTime.getTimeInMillis());
+            mOnTimeChangeListener.onTimeChange(calendar);
         }
     }
 

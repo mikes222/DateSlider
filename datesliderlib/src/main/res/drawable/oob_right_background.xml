@@ -2,7 +2,10 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <gradient android:angle="0" android:endColor="@color/oobBackgroundColor" android:startColor="@color/backgroundColor"/>
+            <gradient
+                android:angle="0"
+                android:endColor="@color/oobBackgroundColor"
+                android:startColor="@android:color/transparent" />
         </shape>
     </item>
 </layer-list>

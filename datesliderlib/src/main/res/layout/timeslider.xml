@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dateSliderContainer"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    style="@style/dateslidercontainer">
     <com.slider.DateSlider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.slider.DateSlider.labeler.HourLabeler"

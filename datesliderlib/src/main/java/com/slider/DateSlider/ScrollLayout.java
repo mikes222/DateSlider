@@ -20,16 +20,13 @@ package com.slider.DateSlider;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 
@@ -81,7 +78,9 @@ public class ScrollLayout extends LinearLayout {
      */
     private int mInitialOffset;
 
-    private int mLastX, mLastScroll, mScrollX;
+    private int mLastX;
+    private int mLastScroll;
+    private int mScrollX;
     private VelocityTracker mVelocityTracker;
     private int mMinimumVelocity;
     private int mMaximumVelocity;
@@ -173,30 +172,25 @@ public class ScrollLayout extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+    }
 
-        //
+    @Override
+    public void onSizeChanged(int w, int h, int old_w, int old_h) {
+        super.onSizeChanged(w, h, old_w, old_h);
+        //Log.i(TAG, "onSizeChanged " + w + ", " + old_w);
+        if (w == old_w && mCenterView != null)
+            return;
+
         // We need to generate enough children to fill all of our desired space, and
         // it needs to be an odd number of children because we treat the center view
         // specially. So, first compute how many children we will need.
-        //
-        Context context = getContext();
-        Object systemService = null;
-        if (context != null) {
-            systemService = context.getSystemService(Context.WINDOW_SERVICE);
-        }
-        if (null == systemService) {
-            return;
-        }
-        final Display display = ((WindowManager) systemService).getDefaultDisplay();
-        Point displayPoint = new Point();
-        display.getSize(displayPoint);
-        final int displayWidth = displayPoint.x;
+        int displayWidth = w;
         childCount = displayWidth / objWidth;
         // Make sure to round up
         if (displayWidth % objWidth != 0) {
             childCount++;
         }
-        // Now make sure we have an odd number of children
+        // Now make sure we have an odd number of children, we want to center the view later.
         if (childCount % 2 == 0) {
             childCount++;
         }
@@ -205,28 +199,48 @@ public class ScrollLayout extends LinearLayout {
         // index just before the center in 1-based indexing, meaning that it will be the
         // center index in 0-based indexing.
         centerIndex = (childCount / 2);
+        Log.i(TAG, "centerindex " + centerIndex + " of " + childCount + " for displayWidth "
+                + displayWidth + " and objWidth " + objWidth + " and label " + mLabeler.getClass().getCanonicalName());
 
         // Make sure we weren't inflated with any views for some odd reason
         removeAllViews();
 
         // Finally, set our actual children width
         childrenWidth = childCount * objWidth;
-    }
 
-    @Override
-    public void onSizeChanged(int w, int h, int old_w, int old_h) {
-        super.onSizeChanged(w, h, old_w, old_h);
+        // Now add all of the child views, making sure to make the center view as such.
+        for (int i = 0; i < childCount; i++) {
+            LayoutParams lp = new LayoutParams(objWidth, objHeight);
+            TimeView ttv = mLabeler.createView(getContext(), i == centerIndex);
+            addView((View) ttv, lp);
+        }
+
+        // Now we need to set the times on all of the TimeViews. We start with the center
+        // view, work our way to the end, then starting from the center again, work our
+        // way back to the beginning.
+        mCenterView = (TimeView) getChildAt(centerIndex);
+
+        labelViews();
+
         // In order to keep our children centered, the initial offset has to
         // be half the difference between our children's width and our width.
-        mInitialOffset = (childrenWidth - w) / 2;
+        mInitialOffset = (childrenWidth - displayWidth) / 2;
         // Now scroll to that offset
         super.scrollTo(mInitialOffset, 0);
         mScrollX = mInitialOffset;
         mLastScroll = mInitialOffset;
-        if (mCenterView != null) {
-            // already initialized, allow this method.
-            setTimeInternal(currentTime, 0);
-        }
+
+        setScroll();
+    }
+
+    private void setScroll() {
+        double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
+        // current time is now in the centerview
+        double curr_per = calculateF(getScrollX());
+        double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / diff;
+        int shift = (int) Math.round((curr_per - goal_per) * objWidth);
+        mScrollX -= shift;
+        reScrollToWithoutMove(mScrollX, 0);
     }
 
     public void setChild(ScrollLayout child) {
@@ -235,10 +249,6 @@ public class ScrollLayout extends LinearLayout {
 
     public void setParent(ScrollLayout parent) {
         this.parent = parent;
-    }
-
-    public ScrollLayout getChild() {
-        return child;
     }
 
     public TimeBoundaries getTimeBoundaries() {
@@ -255,48 +265,36 @@ public class ScrollLayout extends LinearLayout {
         } catch (Exception e) {
             throw new RuntimeException("Failed to construct labeler " + className, e);
         }
-
-        // Now add all of the child views, making sure to make the center view as such.
-        for (int i = 0; i < childCount; i++) {
-            LayoutParams lp = new LayoutParams(objWidth, objHeight);
-            TimeView ttv = mLabeler.createView(getContext(), i == centerIndex);
-            addView((View) ttv, lp);
-        }
-
-        // Now we need to set the times on all of the TimeViews. We start with the center
-        // view, work our way to the end, then starting from the center again, work our
-        // way back to the beginning.
-        mCenterView = (TimeView) getChildAt(centerIndex);
-
-        setTime(currentTime);
-
     }
 
     public void setTimeByChild(long time) {
-        if (mCenterView.getTimeObject().startTime < time && mCenterView.getTimeObject().endTime > time) {
+//        Log.i(TAG, "setTimeByChild " + Util.format(time) + " for " + mLabeler.getClass().getCanonicalName() +
+//                " and " + mCenterView.getTimeObject() );
+        if (mCenterView.getTimeObject().startTime <= time && mCenterView.getTimeObject().endTime >= time) {
             currentTime = time;
             // the time has not changed so much, we still show the correct item
             double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
             // current time is now in the centerview
-            double center = getWidth() / 2.0;
-            int left = (getChildCount() / 2) * objWidth - getScrollX();
-            double curr_per = (center - left) / objWidth;
+            double curr_per = calculateF(getScrollX());
             double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / diff;
-            int shift = (int) Math.round((curr_per - goal_per) * objWidth);
+            int shift = (int) Math.floor((curr_per - goal_per) * objWidth);
             mScrollX -= shift;
-            reScrollTo(mScrollX, 0, false);
+//            Log.i(TAG, "  setTimeByChild1 " + shift + ", curr_per " + curr_per + ", goal_per " + goal_per + ", diff " + diff);
+            reScrollToWithoutMove(mScrollX, 0);
             return;
         } else {
-            setTime(time);
+            currentTime = time;
+            labelViews();
+            setScroll();
         }
 
         if (parent != null) {
-            parent.setTimeByChild(time);
+            parent.setTimeByChild(currentTime);
         }
     }
 
     public void setTimeByParent(long time) {
-        if (mCenterView.getTimeObject().startTime < time && mCenterView.getTimeObject().endTime > time) {
+        if (mCenterView.getTimeObject().startTime <= time && mCenterView.getTimeObject().endTime >= time) {
             // the time has not changed so much, we still show the correct item
             if (child != null) {
                 child.setTimeByParent(time);
@@ -304,7 +302,9 @@ public class ScrollLayout extends LinearLayout {
             return;
         }
 
-        setTime(time);
+        currentTime = time;
+        labelViews();
+        setScroll();
 
         if (child != null) {
             child.setTimeByParent(time);
@@ -316,11 +316,18 @@ public class ScrollLayout extends LinearLayout {
     /**
      * Sets the time. This method always repopulate all views with new labels.
      *
-     * @param time
+     * @param time the time in milliseconds since epoch
      */
     public void setTime(long time) {
         currentTime = time;
-        //Log.i(TAG, "  setTime " + new java.util.Date(currentTime).toString() + ", " + time.getTime().toString());
+        if (mCenterView == null)
+            return;
+        labelViews();
+        setScroll();
+    }
+
+    private void labelViews() {
+        //Log.i(TAG, "  setTime " + Util.format(currentTime) + " for " + mLabeler.getClass().getCanonicalName() + " and " + getChildCount());
         mCenterView.setTime(mLabeler.getElem(currentTime));
         //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mLabeler.getElem(currentTime).toString());
         for (int i = centerIndex + 1; i < getChildCount(); i++) {
@@ -336,39 +343,6 @@ public class ScrollLayout extends LinearLayout {
             if (thisView != null && lastView != null) {
                 thisView.setTime(mLabeler.add(lastView.getTimeObject().getDisplayTime(), -1));
             }
-        }
-    }
-
-
-    /**
-     * this element will position the TimeTextViews such that they correspond to the given time
-     *
-     * @param loops prevents setTime getting called too often, if loop is > 2 the procedure will be
-     *              stopped
-     */
-    private void setTimeInternal(long time, int loops) {
-        if (loops > 2) {
-            Log.d(TAG, String.format("time: %s, start: %s, end: %s", Util.format(currentTime), Util.format(mCenterView.getTimeObject().getStartTime()), Util.format(mCenterView.getTimeObject().getEndTime())));
-            return;
-        }
-        currentTime = time;
-        if (!mScroller.isFinished()) mScroller.abortAnimation();
-        // time duration of centerview
-        double diff = mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime();
-        if (mCenterView.getTimeObject().getStartTime() <= currentTime && mCenterView.getTimeObject().getEndTime() >= currentTime) {
-            // current time is now in the centerview
-            double center = getWidth() / 2.0;
-            int left = (getChildCount() / 2) * objWidth - getScrollX();
-            double curr_per = (center - left) / objWidth;
-            double goal_per = (currentTime - mCenterView.getTimeObject().getStartTime()) / diff;
-            int shift = (int) Math.round((curr_per - goal_per) * objWidth);
-            mScrollX -= shift;
-            reScrollTo(mScrollX, 0, false);
-        } else {
-            int steps = (int) Math.round(((currentTime - (mCenterView.getTimeObject().getStartTime() + diff / 2)) / diff));
-            Log.d(TAG, steps + " steps to " + Util.format(currentTime) + " from (" + Util.format(mCenterView.getTimeObject().getStartTime()) + "-" + Util.format(mCenterView.getTimeObject().getEndTime()) + "), " + ((diff + 1) / 1000 / 60) + " min");
-            moveElements(-steps);
-            setTimeInternal(time, loops + 1);
         }
     }
 
@@ -407,17 +381,18 @@ public class ScrollLayout extends LinearLayout {
      * @param notify if false, the listeners won't be called
      */
     protected void reScrollTo(int x, int y, boolean notify) {
-        if (notify) Log.d(TAG, String.format("reScrollTo " + x));
+        //if (notify) Log.d(TAG, String.format("reScrollTo " + x));
         int scrollX = getScrollX();
         int scrollDiff = x - mLastScroll;
+        if (scrollDiff == 0)
+            return;
+
+        //Log.i(TAG, "f is " + f);
 
         // estimate whether we are going to reach the lower limit
         if (timeBoundaries.minTime != -1 && notify && scrollDiff < 0) {
-            double center = getWidth() / 2.0;
-            int left = (getChildCount() / 2) * objWidth - scrollX;
-            double f = (center - left) / objWidth;
-
-            long esp_time = (long) (mCenterView.getTimeObject().getStartTime() + (f - ((double) -scrollDiff) / objWidth) * (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()));
+            double curr_per = calculateF(scrollX);
+            long esp_time = (long) (mCenterView.getTimeObject().getStartTime() + (curr_per - ((double) -scrollDiff) / objWidth) * (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()));
 
             // if we reach it, prevent surpassing it
             if (esp_time < timeBoundaries.minTime) {
@@ -430,11 +405,8 @@ public class ScrollLayout extends LinearLayout {
         }
         // estimate whether we are going to reach the upper limit
         else if (timeBoundaries.maxTime != -1 && notify && scrollDiff > 0) {
-            double center = getWidth() / 2.0;
-            int left = (getChildCount() / 2) * objWidth - scrollX;
-            double f = (center - left) / objWidth;
-
-            long esp_time = (long) (mCenterView.getTimeObject().getStartTime() + (f - ((double) -scrollDiff) / objWidth) * (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()));
+            double curr_per = calculateF(scrollX);
+            long esp_time = (long) (mCenterView.getTimeObject().getStartTime() + (curr_per - ((double) -scrollDiff) / objWidth) * (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()));
 
             // if we reach it, prevent surpassing it
             if (esp_time > timeBoundaries.maxTime) {
@@ -446,51 +418,88 @@ public class ScrollLayout extends LinearLayout {
             }
         }
 
-        if (childCount > 0) {
-            // Determine the absolute x-value for where we are being asked to scroll
-            scrollX += scrollDiff;
-            // If we've scrolled more than half of a view width in either direction, then
-            // a different time is the "current" time, and we need to shuffle our views around.
-            // Each additional full view's width on top of the initial half view's width is
-            // another position that we need to move our elements. So, we need to add half the
-            // width to the amount we've scrolled and then compute how many full multiples of
-            // the view width that encompasses to determine how far to move our elements.
-            if (scrollX - mInitialOffset > objWidth / 2) {
-                // Our scroll target relative to our initial offset
-                int relativeScroll = scrollX - mInitialOffset;
-                int stepsRight = (relativeScroll + (objWidth / 2)) / objWidth;
-                moveElements(-stepsRight);
-                // Now modify the scroll target based on our view shuffling.
-                scrollX = ((relativeScroll - objWidth / 2) % objWidth) + mInitialOffset - objWidth / 2;
-            } else if (mInitialOffset - scrollX > objWidth / 2) {
-                int relativeScroll = mInitialOffset - scrollX;
-                int stepsLeft = (relativeScroll + (objWidth / 2)) / objWidth;
-                moveElements(stepsLeft);
-                scrollX = (mInitialOffset + objWidth / 2 - ((mInitialOffset + objWidth / 2 - scrollX) % objWidth));
-            }
-        }
-        super.scrollTo(scrollX, y);
-        if (notify) {
-            double center = getWidth() / 2.0;
-            int left = (getChildCount() / 2) * objWidth - scrollX;
-            double f = (center - left) / objWidth;
-            currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * f);
-            Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(currentTime);
-            c = Util.minStartTime(timeBoundaries, c);
-            c = Util.maxEndTime(timeBoundaries, c);
-            currentTime = Util.bindToMinMax(timeBoundaries, c.getTimeInMillis());
-            //Log.i(TAG, "time " + mLabeler.getClass().getCanonicalName() + ": " + mCenterView.getTimeObject().toString());
-            if (parent != null)
-                parent.setTimeByChild(currentTime);
-            if (child != null)
-                child.setTimeByParent(currentTime);
-            else {
-                listener.onScroll(getTime());
-            }
+        // Determine the absolute x-value for where we are being asked to scroll
+        scrollX += scrollDiff;
 
+
+        // If we've scrolled more than half of a view width in either direction, then
+        // a different time is the "current" time, and we need to shuffle our views around.
+        // Each additional full view's width on top of the initial half view's width is
+        // another position that we need to move our elements. So, we need to add half the
+        // width to the amount we've scrolled and then compute how many full multiples of
+        // the view width that encompasses to determine how far to move our elements.
+        if (scrollX - mInitialOffset > objWidth / 2) {
+//            Log.i(TAG, "  move1 " + scrollX + ", " + mInitialOffset + ", " + objWidth);
+            // Our scroll target relative to our initial offset
+            int relativeScroll = scrollX - mInitialOffset;
+            int stepsRight = (relativeScroll + (objWidth / 2)) / objWidth;
+            moveElements(-stepsRight);
+            // Now modify the scroll target based on our view shuffling.
+            scrollX = ((relativeScroll - objWidth / 2) % objWidth) + mInitialOffset - objWidth / 2;
+        } else if (mInitialOffset - scrollX > objWidth / 2) {
+//            Log.i(TAG, "  move2 " + scrollX + ", " + mInitialOffset + ", " + objWidth);
+            int relativeScroll = mInitialOffset - scrollX;
+            int stepsLeft = (relativeScroll + (objWidth / 2)) / objWidth;
+            moveElements(stepsLeft);
+            scrollX = (mInitialOffset + objWidth / 2 - ((mInitialOffset + objWidth / 2 - scrollX) % objWidth));
+        }
+
+        super.scrollTo(scrollX, y);
+
+        if (notify) {
+            notifyParentChild(scrollX);
         }
         mLastScroll = x;
+    }
+
+    /**
+     * This is the ccore version of reScrollTo() without the possibility to move the timelabels. It
+     * is used for internal calls only where it is 100% sure that relabeling is not needed.
+     */
+    protected void reScrollToWithoutMove(int x, int y) {
+        //if (notify) Log.d(TAG, String.format("reScrollTo " + x));
+        int scrollX = getScrollX();
+        int scrollDiff = x - mLastScroll;
+        if (scrollDiff == 0)
+            return;
+
+        //Log.i(TAG, "f is " + f);
+
+        // Determine the absolute x-value for where we are being asked to scroll
+        scrollX += scrollDiff;
+
+
+        super.scrollTo(scrollX, y);
+
+        mLastScroll = x;
+    }
+
+    private void notifyParentChild(int scrollX) {
+        double curr_per = calculateF(scrollX);
+        currentTime = (long) (mCenterView.getTimeObject().getStartTime() + (mCenterView.getTimeObject().getEndTime() - mCenterView.getTimeObject().getStartTime()) * curr_per);
+        if (parent != null)
+            parent.setTimeByChild(currentTime);
+
+        if (child != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(currentTime);
+            c.setTimeInMillis(Util.bindToMinMax(timeBoundaries, c.getTimeInMillis()));
+            c = Util.minStartTime(timeBoundaries, c);
+            c = Util.maxEndTime(timeBoundaries, c);
+            currentTime = c.getTimeInMillis();
+
+            child.setTimeByParent(currentTime);
+        } else {
+            listener.onScroll(getTime());
+        }
+    }
+
+    private double calculateF(int scrollX) {
+        double center = getWidth() / 2.0;
+        long left = (getChildCount() / 2) * objWidth - scrollX;
+        double f = (center - left) / (double) objWidth;
+        assert (f >= 0 && f <= 1);
+        return f;
     }
 
     /**
@@ -618,6 +627,8 @@ public class ScrollLayout extends LinearLayout {
     public void setOnScrollListener(OnScrollListener l) {
         listener = l;
     }
+
+    /////////////////////////////////////////////////////////////////////////
 
     public interface OnScrollListener {
         public void onScroll(long x);

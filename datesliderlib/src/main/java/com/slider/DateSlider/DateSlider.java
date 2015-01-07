@@ -19,6 +19,9 @@
 
 package com.slider.DateSlider;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -42,7 +46,7 @@ import java.util.Calendar;
  */
 public class DateSlider extends DialogFragment {
 
-//	private static String TAG = "DATESLIDER";
+    private static String TAG = "DateSlider";
 
     protected OnDateSetListener onDateSetListener;
 
@@ -82,6 +86,10 @@ public class DateSlider extends DialogFragment {
      */
     private String title;
 
+    private boolean performAnimation = true;
+
+    private AnimatorSet animators;
+
     /**
      * Constructor
      */
@@ -92,6 +100,7 @@ public class DateSlider extends DialogFragment {
 
     /**
      * Sets the id of the layout to be used. Consider R.layout.someLayout.
+     *
      * @param layoutID
      * @return
      */
@@ -107,6 +116,7 @@ public class DateSlider extends DialogFragment {
 
     /**
      * Sets the minimum allowed time in utc timezone. The Class will not return or allow to chose a time beyond the given parameter.
+     *
      * @param minTime
      * @return DateSlider
      */
@@ -120,6 +130,7 @@ public class DateSlider extends DialogFragment {
 
     /**
      * Sets the maximum allowed time in utc timezone. The Class will not return or allow to chose a time beyond the given parameter.
+     *
      * @param maxTime
      * @return DateSlider
      */
@@ -151,6 +162,7 @@ public class DateSlider extends DialogFragment {
 
     /**
      * Sets the time in utc timezone.
+     *
      * @param initialTime
      * @return
      */
@@ -203,6 +215,7 @@ public class DateSlider extends DialogFragment {
             tempTimeBoundaries = (TimeBoundaries) savedInstanceState.getSerializable("tempTimeBoundaries");
             title = savedInstanceState.getString("title");
             mLayoutID = savedInstanceState.getInt("layout");
+            performAnimation = savedInstanceState.getBoolean("performAnimation");
         }
     }
 
@@ -361,7 +374,7 @@ public class DateSlider extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        final HorizontalScrollView jumpButtonsScrollView = (HorizontalScrollView)getView().findViewById(R.id.jumpButtonsScrollView);
+        final HorizontalScrollView jumpButtonsScrollView = (HorizontalScrollView) getView().findViewById(R.id.jumpButtonsScrollView);
         if (jumpButtonsScrollView != null) {
             ViewTreeObserver observer = jumpButtonsScrollView.getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -372,17 +385,74 @@ public class DateSlider extends DialogFragment {
                     int buttonsWidth = layout.getWidth();
                     // max. screen size
                     int scrollWidth = jumpButtonsScrollView.getWidth();
-                    int position = buttonsWidth / 2 - scrollWidth / 2;
-                    Log.i("HERE", "width: " + position);
-                    jumpButtonsScrollView.smoothScrollTo(position, 0);
+                    final int position = buttonsWidth / 2 - scrollWidth / 2;
+                    final int max = buttonsWidth - scrollWidth;
+                    Log.i(TAG, "from " + buttonsWidth + ", scrW " + scrollWidth + ", des: " + position);
+                    if (performAnimation) {
+                        doAnimationForJumpButtons(jumpButtonsScrollView, max, position);
+                        disableAnimationAfterFirstStart();
+                    } else {
+                        jumpButtonsScrollView.smoothScrollTo(position, 0);
+                    }
                 }
             });
         }
     }
 
 
+    protected void disableAnimationAfterFirstStart() {
+        //performAnimation = false;
+    }
+
+    protected void doAnimationForJumpButtons(HorizontalScrollView jumpButtonsScrollView, int max, int position) {
+        Log.i(TAG, "doAnim");
+        if (animators != null) {
+            animators.cancel();
+            animators = null;
+        }
+        ObjectAnimator translate1 = ObjectAnimator.ofInt(jumpButtonsScrollView, "scrollX", max * 3 / 4).setDuration(1000);
+        ObjectAnimator translate2 = ObjectAnimator.ofInt(jumpButtonsScrollView, "scrollX", max / 4).setDuration(1000);
+        ObjectAnimator translate3 = ObjectAnimator.ofInt(jumpButtonsScrollView, "scrollX", max * 5 / 8).setDuration(1000);
+        ObjectAnimator translate4 = ObjectAnimator.ofInt(jumpButtonsScrollView, "scrollX", position).setDuration(1000);
+
+        animators = new AnimatorSet();
+        animators.play(translate4);
+        //animators.playSequentially(translate1, translate2, translate3, translate4);
+        //animators.play(translate1).after(translate2).after(translate3).after(translate4);
+        //animators.setStartDelay(1000L);
+        animators.setInterpolator(new BounceInterpolator());
+        animators.addListener(new Animator.AnimatorListener() {
+
+            @Override
+            public void onAnimationStart(Animator arg0) {
+                Log.i(TAG, "doAnim start");
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator arg0) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator arg0) {
+                Log.i(TAG, "doAnim end");
+            }
+
+            @Override
+            public void onAnimationCancel(Animator arg0) {
+                Log.i(TAG, "doAnim cancel");
+            }
+        });
+        animators.start();
+
+    }
+
+    public void setPerformAnimation(boolean performAnimation) {
+        this.performAnimation = performAnimation;
+    }
+
     /**
      * Used by the jump-Buttons to change the time of the slider
+     *
      * @param c
      */
     protected void setTime(Calendar c) {
@@ -403,10 +473,11 @@ public class DateSlider extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (outState == null) outState = new Bundle();
-        outState.putSerializable("time", getTime());
+        outState.putSerializable("time", getTime().getTimeInMillis());
         outState.putSerializable("tempTimeBoundaries", tempTimeBoundaries);
         outState.putString("title", title);
         outState.putInt("layout", mLayoutID);
+        outState.putBoolean("performAnimation", performAnimation);
     }
 
     /**
