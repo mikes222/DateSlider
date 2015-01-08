@@ -14,13 +14,17 @@ import java.util.Calendar;
  */
 public class MonthLabeler extends Labeler {
 
+    private static String TAG = "MonthLabeler";
+
     public MonthLabeler(String formatString, TimeBoundaries timeBoundaries) {
         super(formatString, timeBoundaries);
     }
 
     @Override
     public TimeObject add(long time, int val) {
-        return Util.addMonths(time, val, mFormatString, timeBoundaries);
+        TimeObject result = Util.addMonths(time, val, mFormatString, timeBoundaries);
+        //Log.i(TAG, "add " + val + ", " + result.toString());
+        return result;
     }
 
     @Override
@@ -31,7 +35,9 @@ public class MonthLabeler extends Labeler {
     public TimeObject getElem(long time) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(time);
-        return Util.getMonth(c, mFormatString, timeBoundaries);
+        TimeObject result = Util.getMonth(c, mFormatString, timeBoundaries);
+        //Log.i(TAG, "getElem " + result.toString());
+        return result;
     }
 
 }

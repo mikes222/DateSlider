@@ -115,11 +115,11 @@ public class Util {
         if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime < timeObject.getEndTime()) {
             oob = true;
         }
-        if (timeBoundaries.minTime != -1 && timeBoundaries.minTime > timeObject.getStartTime() && timeBoundaries.minTime <= timeObject.getEndTime()) {
+        if (timeBoundaries.minTime != -1 && timeBoundaries.minTime >= timeObject.getStartTime() && timeBoundaries.minTime <= timeObject.getEndTime()) {
             oobLeft = true;
             oob = false;
         }
-        if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime > timeObject.getStartTime() && timeBoundaries.maxTime <= timeObject.getEndTime()) {
+        if (timeBoundaries.maxTime != -1 && timeBoundaries.maxTime >= timeObject.getStartTime() && timeBoundaries.maxTime <= timeObject.getEndTime()) {
             oobRight = true;
             oob = false;
         }
@@ -176,15 +176,29 @@ public class Util {
         long displayTime = c.getTimeInMillis();
         String display = String.format(formatString, c, c);
 
-        // decrement at the half of the minuteinterval
-        c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
-
+        if (timeBoundaries.startHour != -1) {
+            // when decrementing the minuteInterval we would land at 23:45 the previous day
+            c.set(Calendar.HOUR_OF_DAY, timeBoundaries.startHour);
+        } else {
+            // decrement at the half of the minuteinterval
+            c.add(Calendar.SECOND, timeBoundaries.minuteInterval * -30);
+        }
         long startTime = minStartTime(timeBoundaries, c).getTimeInMillis();
+
         // set calendar to last millisecond of the month
-        c.add(Calendar.MONTH, 1);
-        c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
-        c.add(Calendar.MILLISECOND, -1);
+        if (timeBoundaries.endHour != -1) {
+            c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
+            c.set(Calendar.HOUR_OF_DAY, timeBoundaries.endHour);
+            // maxEndTime will truncate to the last allowed time of day.
+            c.set(Calendar.MINUTE, 59);
+            c.set(Calendar.SECOND, 59);
+        } else {
+            c.add(Calendar.MONTH, 1);
+            c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
+            c.add(Calendar.MILLISECOND, -1);
+        }
         long endTime = maxEndTime(timeBoundaries, c).getTimeInMillis();
+
         TimeObject timeObject = new TimeObject(display, startTime, endTime, displayTime);
         setOob(timeBoundaries, timeObject, false);
         return timeObject;

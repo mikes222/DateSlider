@@ -190,6 +190,7 @@ public class ScrollLayout extends LinearLayout {
         if (displayWidth % objWidth != 0) {
             childCount++;
         }
+        childCount++;
         // Now make sure we have an odd number of children, we want to center the view later.
         if (childCount % 2 == 0) {
             childCount++;
@@ -199,8 +200,6 @@ public class ScrollLayout extends LinearLayout {
         // index just before the center in 1-based indexing, meaning that it will be the
         // center index in 0-based indexing.
         centerIndex = (childCount / 2);
-        Log.i(TAG, "centerindex " + centerIndex + " of " + childCount + " for displayWidth "
-                + displayWidth + " and objWidth " + objWidth + " and label " + mLabeler.getClass().getCanonicalName());
 
         // Make sure we weren't inflated with any views for some odd reason
         removeAllViews();
