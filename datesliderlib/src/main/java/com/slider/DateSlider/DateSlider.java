@@ -473,7 +473,7 @@ public class DateSlider extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (outState == null) outState = new Bundle();
-        outState.putSerializable("time", getTime().getTimeInMillis());
+        outState.putLong("time", getTime().getTimeInMillis());
         outState.putSerializable("tempTimeBoundaries", tempTimeBoundaries);
         outState.putString("title", title);
         outState.putInt("layout", mLayoutID);
