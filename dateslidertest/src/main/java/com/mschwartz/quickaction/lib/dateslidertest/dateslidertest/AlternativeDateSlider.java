@@ -27,6 +27,10 @@ import java.util.Calendar;
 
 public class AlternativeDateSlider extends DateSlider {
 
+    public AlternativeDateSlider() {
+        super();
+    }
+
     public AlternativeDateSlider(Context context, OnDateSetListener l, Calendar calendar) {
         this(context, l, calendar, null, null);
     }
