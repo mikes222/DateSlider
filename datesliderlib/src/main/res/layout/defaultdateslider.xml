@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.slider.DateSlider.SliderContainer
+<com.mschwartz.dateslider.SliderContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dateSliderContainer"
@@ -7,16 +7,16 @@
     android:layout_height="fill_parent"
     style="@style/dateslidercontainer"
     >
-    <com.slider.DateSlider.ScrollLayout
+    <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.MonthYearLabeler"
+        app:labelerClass="com.mschwartz.dateslider.labeler.MonthYearLabeler"
         app:labelerFormat="%tb %tY"
         app:childWidth="90dp"
         />
-    <com.slider.DateSlider.ScrollLayout
+    <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.DayDateLabeler"
+        app:labelerClass="com.mschwartz.dateslider.labeler.DayWeekdayLabeler"
         app:labelerFormat="%td %ta"
         app:childWidth="60dp"
         />
-</com.slider.DateSlider.SliderContainer>
+</com.mschwartz.dateslider.SliderContainer>

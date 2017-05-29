@@ -5,82 +5,88 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
         <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Click one of the buttons to select a date/time."
             android:layout_gravity="center"
-            android:layout_width="wrap_content" />
+            android:text="Click one of the buttons to select a date/time." />
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/defaultDateSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select DefaultDateTime"
-            android:id="@+id/defaultDateSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select DefaultDateTime"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/defaultDateLimitSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select DefaultDateTime with Limit"
-            android:id="@+id/defaultDateLimitSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select DefaultDateTime with Limit"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/defaultDateHourSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select DefaultDateTime with start/endHour"
-            android:id="@+id/defaultDateHourSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select DefaultDateTime with start/endHour"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/defaultDateTimeLimitStartEndSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select DefaultDateTime with Limit and start/endHour"
-            android:id="@+id/defaultDateTimeLimitStartEndSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select DefaultDateTime with Limit and start/endHour"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/alternativeDateSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select AlternativeDate"
-            android:id="@+id/alternativeDateSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select AlternativeDate"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/customDateSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select CustomDate"
-            android:id="@+id/customDateSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select CustomDate"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/monthYearDateSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select Month/Year"
-            android:id="@+id/monthYearDateSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select Month/Year"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/timeSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select Time"
-            android:id="@+id/timeSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select Time"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/timeLimitSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select Time with Limit"
-            android:id="@+id/timeLimitSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select Time with Limit"></Button>
 
         <Button
-            android:layout_height="wrap_content"
+            android:id="@+id/dateTimeSelectButton"
             android:layout_width="fill_parent"
-            android:text="Select DateTime"
-            android:id="@+id/dateTimeSelectButton"></Button>
+            android:layout_height="wrap_content"
+            android:text="Select DateTime"></Button>
+
+        <Button
+            android:id="@+id/monthdayminuteSelectButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Select MonthdayMinute"></Button>
 
         <TextView
             android:id="@+id/selectedDateLabel"
-            android:gravity="center"
-            android:layout_height="wrap_content"
             android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:gravity="center"
             android:textSize="25dp"></TextView>
     </LinearLayout>
 </ScrollView>

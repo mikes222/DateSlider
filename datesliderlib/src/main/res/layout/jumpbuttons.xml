@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dateSliderButLayout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <HorizontalScrollView
         android:id="@+id/jumpButtonsScrollView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scrollbars="none">
 
@@ -19,83 +19,91 @@
 
             <Button
                 android:id="@+id/decYear"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/dec1year"
                 android:drawableLeft="@android:drawable/ic_media_rew"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_rew"
+                android:maxLines="1"
+                android:text="@string/dec1year" />
 
             <Button
                 android:id="@+id/decMonth"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/dec1month"
                 android:drawableLeft="@android:drawable/ic_media_rew"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_rew"
+                android:maxLines="1"
+                android:text="@string/dec1month" />
 
             <Button
                 android:id="@+id/decWeek"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/dec1week"
                 android:drawableLeft="@android:drawable/ic_media_previous"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_previous"
+                android:maxLines="1"
+                android:text="@string/dec1week" />
 
             <Button
                 android:id="@+id/decDay"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/dec1day"
                 android:drawableLeft="@android:drawable/ic_media_previous"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_previous"
+                android:maxLines="1"
+                android:text="@string/dec1day" />
 
             <Button
                 android:id="@+id/incDay"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/inc1day"
                 android:drawableLeft="@android:drawable/ic_media_next"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_next"
+                android:maxLines="1"
+                android:text="@string/inc1day" />
 
             <Button
                 android:id="@+id/incWeek"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/inc1week"
                 android:drawableLeft="@android:drawable/ic_media_next"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_next"
+                android:maxLines="1"
+                android:text="@string/inc1week" />
 
             <Button
                 android:id="@+id/incMonth"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/inc1month"
                 android:drawableLeft="@android:drawable/ic_media_ff"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_ff"
+                android:maxLines="1"
+                android:text="@string/inc1month" />
 
             <Button
                 android:id="@+id/incYear"
+                style="@style/datesliderbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:text="@string/inc1year"
                 android:drawableLeft="@android:drawable/ic_media_ff"
-                style="@style/button" />
+                android:drawableStart="@android:drawable/ic_media_ff"
+                android:maxLines="1"
+                android:text="@string/inc1year" />
         </LinearLayout>
     </HorizontalScrollView>
 </LinearLayout>

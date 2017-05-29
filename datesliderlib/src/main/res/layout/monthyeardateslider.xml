@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.slider.DateSlider.SliderContainer
+<com.mschwartz.dateslider.SliderContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dateSliderContainer"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     style="@style/dateslidercontainer">
-    <com.slider.DateSlider.ScrollLayout
+    <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.YearLabeler"
+        app:labelerClass="com.mschwartz.dateslider.labeler.YearLabeler"
         app:labelerFormat="%tY"
         app:childWidth="150dp"/>
-    <com.slider.DateSlider.ScrollLayout
+    <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
-        app:labelerClass="com.slider.DateSlider.labeler.MonthLabeler"
+        app:labelerClass="com.mschwartz.dateslider.labeler.MonthLabeler"
         app:labelerFormat="%tB"
         app:childWidth="200dp"/>
     <include layout="@layout/dialogbuttons"/>
-</com.slider.DateSlider.SliderContainer>
+</com.mschwartz.dateslider.SliderContainer>
