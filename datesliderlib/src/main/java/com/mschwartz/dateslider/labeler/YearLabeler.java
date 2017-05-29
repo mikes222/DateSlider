@@ -8,6 +8,7 @@ import com.mschwartz.dateslider.timeview.TimeTextView;
 import com.mschwartz.dateslider.timeview.TimeView;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * A Labeler that displays months
@@ -23,9 +24,11 @@ public class YearLabeler extends Labeler {
         return Util.addYears(time, val, mFormatString, timeBoundaries);
     }
 
+    @Override
     public TimeObject getElem(long time) {
 
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
         return Util.getYear(c, mFormatString, timeBoundaries);
     }

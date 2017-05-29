@@ -25,13 +25,12 @@ public class SliderContainer extends LinearLayout {
      */
     private final Calendar mTime = Calendar.getInstance();
 
-    private String timezone;
     /**
      * This listener gets informed whenever the user moves one of the sliders and hence changes the time.
      */
     private OnTimeChangeListener mOnTimeChangeListener;
 
-    private TimeBoundaries timeBoundaries = new TimeBoundaries();
+    private final TimeBoundaries timeBoundaries = new TimeBoundaries();
 
     public SliderContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -68,12 +67,6 @@ public class SliderContainer extends LinearLayout {
         }
     }
 
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-        if (timezone != null)
-            mTime.setTimeZone(TimeZone.getTimeZone(timezone));
-    }
-
     public void setTime(Calendar calendar, TimeBoundaries tempTimeBoundaries) {
         if (tempTimeBoundaries.minuteInterval > 1)
             timeBoundaries.minuteInterval = tempTimeBoundaries.minuteInterval;
@@ -104,6 +97,8 @@ public class SliderContainer extends LinearLayout {
             c.setTimeInMillis(tempTimeBoundaries.maxTime);
             timeBoundaries.maxTime = Util.maxEndTime(timeBoundaries, Util.minStartTime(timeBoundaries, c)).getTimeInMillis();
         }
+        timeBoundaries.timezone = tempTimeBoundaries.timezone;
+        calendar.setTimeZone(timeBoundaries.timezone);
         setTime(calendar);
     }
 
@@ -152,6 +147,10 @@ public class SliderContainer extends LinearLayout {
         arrangeScrollLayout(null);
     }
 
+    public void setTimezone(TimeZone timezone) {
+        timeBoundaries.timezone = timezone;
+    }
+
     /**
      * Sets the OnTimeChangeListener, which will be notified anytime the time is
      * set or changed.
@@ -181,6 +180,7 @@ public class SliderContainer extends LinearLayout {
         }
         if (mOnTimeChangeListener != null) {
             Calendar calendar = Calendar.getInstance();
+            calendar.setTimeZone(timeBoundaries.timezone);
             calendar.setTimeInMillis(mTime.getTimeInMillis());
             mOnTimeChangeListener.onTimeChange(calendar);
         }

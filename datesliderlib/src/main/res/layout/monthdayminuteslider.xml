@@ -6,6 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     style="@style/dateslidercontainer">
+
     <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.mschwartz.dateslider.labeler.MonthDayWeekdayLabeler"
@@ -17,14 +18,14 @@
         app:labelerClass="com.mschwartz.dateslider.labeler.HourLabeler"
         app:labelerFormat="%tH"
         app:childWidth="50dp"
-        app:childHeight="40dp"/>
+        app:childHeight="50dp"/>
 
     <com.mschwartz.dateslider.ScrollLayout
         style="@style/Scroller"
         app:labelerClass="com.mschwartz.dateslider.labeler.MinuteLabeler"
         app:labelerFormat="%tM"
         app:childWidth="40dp"
-        app:childHeight="30dp" />
+        app:childHeight="40dp" />
 
     <include layout="@layout/dialogbuttons"/>
 </com.mschwartz.dateslider.SliderContainer>

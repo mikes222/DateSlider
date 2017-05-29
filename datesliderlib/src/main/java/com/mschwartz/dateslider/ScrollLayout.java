@@ -146,24 +146,26 @@ public class ScrollLayout extends LinearLayout {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrollLayout,
                 0, 0);
 
-        // Get the labeler class and construct an instance - in the API resulting 'a' cannot be null
-        //noinspection ConstantConditions
-        className = a.getNonResourceString(R.styleable.ScrollLayout_labelerClass);
-        if (className == null) {
-            throw new RuntimeException("Must specify labeler class at " + a.getPositionDescription());
-        }
+        if (a != null) {
+            // Get the labeler class and construct an instance - in the API resulting 'a' cannot be null
+            //noinspection ConstantConditions
+            className = a.getNonResourceString(R.styleable.ScrollLayout_labelerClass);
+            if (className == null) {
+                throw new RuntimeException("Must specify labeler class at " + a.getPositionDescription());
+            }
 
-        labelerFormat = a.getString(R.styleable.ScrollLayout_labelerFormat);
-        if (labelerFormat == null) {
-            throw new RuntimeException("Must specify labelerFormat at " + a.getPositionDescription());
-        }
+            labelerFormat = a.getString(R.styleable.ScrollLayout_labelerFormat);
+            if (labelerFormat == null) {
+                throw new RuntimeException("Must specify labelerFormat at " + a.getPositionDescription());
+            }
 
-        // Determine the width and height of our children, using the labelers preferred
-        // values as defaults
-        objWidth = a.getDimensionPixelSize(R.styleable.ScrollLayout_childWidth,
-                (int) (50 * context.getResources().getDisplayMetrics().density));
-        objHeight = a.getDimensionPixelSize(R.styleable.ScrollLayout_childHeight,
-                (int) (50 * context.getResources().getDisplayMetrics().density));
+            // Determine the width and height of our children, using the labelers preferred
+            // values as defaults
+            objWidth = a.getDimensionPixelSize(R.styleable.ScrollLayout_childWidth,
+                    (int) (50 * context.getResources().getDisplayMetrics().density));
+            objHeight = a.getDimensionPixelSize(R.styleable.ScrollLayout_childHeight,
+                    (int) (50 * context.getResources().getDisplayMetrics().density));
+        }
 
         a.recycle();
     }

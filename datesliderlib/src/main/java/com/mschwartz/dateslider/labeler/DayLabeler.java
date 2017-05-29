@@ -32,9 +32,11 @@ public class DayLabeler extends Labeler {
         return result;
     }
 
+    @Override
     public TimeObject getElem(long time) {
 
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
 
         TimeObject result = Util.getDay(c, mFormatString, timeBoundaries);

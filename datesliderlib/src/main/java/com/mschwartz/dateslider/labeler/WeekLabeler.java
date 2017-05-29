@@ -11,6 +11,7 @@ import com.mschwartz.dateslider.timeview.TimeTextView;
 import com.mschwartz.dateslider.timeview.TimeView;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * A customized Labeler that displays weeks using a CustomTimeTextView
@@ -62,8 +63,10 @@ public class WeekLabeler extends Labeler {
 
     }
 
+    @Override
     public TimeObject getElem(long time) {
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
 
         return Util.getWeek(c, mFormatString, timeBoundaries);

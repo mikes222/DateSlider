@@ -1,6 +1,7 @@
 package com.mschwartz.dateslider;
 
 import java.io.Serializable;
+import java.util.TimeZone;
 
 /**
  * This class holds all boundaries relevant for the views. It exists just once per dialog.
@@ -26,4 +27,6 @@ public class TimeBoundaries implements Serializable {
      * The ending hour of the day. Must be either <code>-1</code> or after startHour.
      */
     public int endHour = -1;
+
+    public TimeZone timezone = TimeZone.getDefault();
 }

@@ -18,12 +18,13 @@ public class Util {
 
 
     public static TimeObject addYears(long time, int years, String formatString, TimeBoundaries timeBoundaries) {
-        Calendar c = add(time, years, Calendar.YEAR);
+        Calendar c = add(time, years, Calendar.YEAR, timeBoundaries);
         return getYear(c, formatString, timeBoundaries);
     }
 
     public static TimeObject addMonths(long time, int months, String formatString, TimeBoundaries timeBoundaries) {
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
 
         boolean last = false;
@@ -41,12 +42,12 @@ public class Util {
     }
 
     public static TimeObject addWeeks(long time, int days, String formatString, TimeBoundaries timeBoundaries) {
-        Calendar c = add(time, days, Calendar.WEEK_OF_YEAR);
+        Calendar c = add(time, days, Calendar.WEEK_OF_YEAR, timeBoundaries);
         return getWeek(c, formatString, timeBoundaries);
     }
 
     public static TimeObject addDays(long time, int days, String formatString, TimeBoundaries timeBoundaries) {
-        Calendar c = add(time, days, Calendar.DAY_OF_MONTH);
+        Calendar c = add(time, days, Calendar.DAY_OF_MONTH, timeBoundaries);
         return getDay(c, formatString, timeBoundaries);
     }
 
@@ -56,6 +57,7 @@ public class Util {
             incdec = -1;
 
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
 
         for (int i = 0; i < Math.abs(hours); ++i) {
@@ -84,6 +86,7 @@ public class Util {
             incdec = -1;
 
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
 
         for (int i = 0; i < Math.abs(minutes); ++i) {
@@ -125,6 +128,7 @@ public class Util {
         }
         if (checkHours) {
             Calendar calendar = Calendar.getInstance();
+            calendar.setTimeZone(timeBoundaries.timezone);
             calendar.setTimeInMillis(timeObject.getStartTime());
             if (timeBoundaries.startHour != -1 && timeBoundaries.startHour == calendar.get(Calendar.HOUR_OF_DAY) && calendar.get(Calendar.MINUTE) == 0) {
                 oobLeft = true;
@@ -280,7 +284,10 @@ public class Util {
         int day = c.get(Calendar.DAY_OF_MONTH);
         int hour = c.get(Calendar.HOUR_OF_DAY);
         // get the first millisecond of that hour
-        c.set(year, month, day, hour, 0, 0);
+        //c.set(year, month, day, hour, 0, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
 
         long displayTime = c.getTimeInMillis();
         String display = String.format(formatString, c, c);
@@ -323,8 +330,9 @@ public class Util {
         return timeObject;
     }
 
-    private static Calendar add(long time, int val, int field) {
+    private static Calendar add(long time, int val, int field, TimeBoundaries timeBoundaries) {
         Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeBoundaries.timezone);
         c.setTimeInMillis(time);
         c.add(field, val);
         return c;

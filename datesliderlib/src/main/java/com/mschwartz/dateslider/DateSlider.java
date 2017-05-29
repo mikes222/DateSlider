@@ -102,8 +102,6 @@ public class DateSlider extends DialogFragment {
 
     private boolean performAnimation = true;
 
-    private String timezone;
-
     private AnimatorSet animators;
 
     public static DateSlider newInstance(Bundle args) {
@@ -170,7 +168,7 @@ public class DateSlider extends DialogFragment {
         if (bundle.get(ARG_TITLE) != null)
             title = bundle.getString(ARG_TITLE);
         if (bundle.get(ARG_TIMEZONE) != null)
-            timezone = bundle.getString(ARG_TIMEZONE);
+            tempTimeBoundaries.timezone = TimeZone.getTimeZone(bundle.getString(ARG_TIMEZONE));
     }
 
     /**
@@ -291,7 +289,6 @@ public class DateSlider extends DialogFragment {
             title = savedInstanceState.getString("title");
             mLayoutID = savedInstanceState.getInt("layout");
             performAnimation = savedInstanceState.getBoolean("performAnimation");
-            timezone = savedInstanceState.getString("timezone");
         }
     }
 
@@ -322,7 +319,6 @@ public class DateSlider extends DialogFragment {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(mInitialTime);
         mContainer.setTime(c, tempTimeBoundaries);
-        mContainer.setTimezone(timezone);
 
         if (dateSliderOkButton != null) {
             dateSliderOkButton.setOnClickListener(new View.OnClickListener() {
@@ -542,8 +538,9 @@ public class DateSlider extends DialogFragment {
     }
 
     protected void setTimezone(String timezone) {
-        this.timezone = timezone;
-        mContainer.getTime().setTimeZone(TimeZone.getTimeZone(timezone));
+        tempTimeBoundaries.timezone = TimeZone.getTimeZone(timezone);
+        if (mContainer != null)
+            mContainer.setTimezone(tempTimeBoundaries.timezone);
     }
 
     private OnTimeChangeListener onTimeChangeListener = new OnTimeChangeListener() {
@@ -564,7 +561,6 @@ public class DateSlider extends DialogFragment {
         outState.putString("title", title);
         outState.putInt("layout", mLayoutID);
         outState.putBoolean("performAnimation", performAnimation);
-        outState.putString("timezone", timezone);
     }
 
     /**

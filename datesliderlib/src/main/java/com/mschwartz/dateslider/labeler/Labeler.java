@@ -53,7 +53,7 @@ public abstract class Labeler {
      * work of turning a point time into the range and display string that compose
      * a TimeObject.
      *
-     * @param c The time to convert
+     * @param time The time to convert
      * @return The resulting TimeObject
      */
     public abstract TimeObject getElem(long time);
